@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Library Loan System - Report Form{% endblock %}
+
+{% block content %}
+{% from "includes/_formHelper.html" import render_field %}
+
+
+<link rel="stylesheet" href="./static/Css/formstyle.css">
+{% for message in get_flashed_messages() %}
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+{{ message }}
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+<form method="POST" action="" enctype="multipart/form-data">
+  <h2 class="display-4">Add Credit Card</h2>
+  <div class="form-container">
+    <div class="contact-box">
+  <div class="form-group">
+    {{form.card_name(class = 'form-control', placeholder = 'Name on Card')}}
+  </div>
+  <div class="form-group">
+    {{form.credit_number(class = 'form-control', placeholder = 'Credit Card Number')}}
+  </div>
+  <div class="form-group">
+    {{form.credit_cvv(class = 'form-control', placeholder = 'Credit Card CVV')}}
+  </div>
+  <div class="form-group">
+    {{form.expiry_date(class = 'form-control', placeholder = 'Expiry Date')}}
+  </div>
+      <input type="submit" value="Submit" class="btn"/>
+    </div>
+    </div>
+</form>
+<div class="text-center"> <a href="/update">Back?</a></div>
+{% endblock %}

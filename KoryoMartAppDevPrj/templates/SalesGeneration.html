@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Library Loan System - Retrieve Inventory{% endblock %}
+
+{% block content %}
+<style>
+    div .content{
+        display: grid;
+        place-items: center;
+        margin: 50px;
+        border: 2px solid #000000;
+        border-radius: 20px;
+        box-shadow: 0 0 50px 2px;
+        background-color: #FFFFFF;
+    }
+
+    div .card-body{
+        display: grid;
+        place-items: center;
+    }
+
+    div .card-body h2{
+        font-family: 'Open Sans', Arial, Helvetica, Sans-serif, Verdana, Tahoma
+        font-weight: bold;
+    }
+
+    div #chart1{
+        height: 400px;
+        width: 600px;
+        object-fit: contain;
+    }
+</style>
+
+ <div class="content">
+     <div class="card-body">
+         <h2>Quantity of Products</h2>
+         <div id="chart1"></div>
+     </div>
+ </div>
+    <!-- plotly CDN -->
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script type="text/javascript">
+    var graphs1 = {{ graph1JSON | safe}};
+    Plotly.plot("chart1", graphs1,{});
+</script>
+{% endblock %}

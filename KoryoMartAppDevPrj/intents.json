@@ -1,0 +1,173 @@
+{
+  "intents": [
+    {
+      "tag": "greeting",
+      "patterns": [
+        "Hi",
+        "Hey",
+        "How are you",
+        "Is anyone there?",
+        "Hello",
+        "Good day"
+      ],
+      "responses": [
+        "Hello! what can I do for \nyou?",
+        "Hi there, what can I do for \nyou?",
+        "Hi there, how can I help \ntoday?"
+      ]
+    },
+    {
+      "tag": "goodbye",
+      "patterns": ["Bye", "See you later", "Goodbye"],
+      "responses": [
+        "See you later!",
+        "Have a nice day",
+        "Bye! Come back again \nsoon."
+      ]
+    },
+    {
+      "tag": "thanks",
+      "patterns": ["Thanks", "Thank you", "That's helpful", "Thank's a lot!"],
+      "responses": ["Happy to help!", "No problem.", "My pleasure"]
+    },
+    {
+      "tag": "help",
+      "patterns": [
+        "How to",
+        "help",
+        "where",
+        "I need help"
+      ],
+      "responses": [
+        "These are some common \nFAQs. \nPlease type in the \ncorresponding number to \nfind out more. \n1. I have a missing item \nfrom an order. \n2. I received a damaged \nitem \n3. How do I cancel my \norder after making a \npurchase? \n4. How do I report a \nproblem? \n5. What are the payment \nmethods? \n6. How long does Delivery \ntake? \n7. How do I submit \nfeedback? \n8. How do I contact \ncustomer support?"
+      ]
+    },
+    {
+      "tag": "1",
+      "patterns": [
+        "1",
+        "1.",
+        "one"
+      ],
+      "responses": [
+        "If you encounter an item \nthat has not been \nreceived, please go to \nthe navigation bar and \nclick on 'Report Form', \nor click the <a href='http://127.0.0.1:5000/createReportForm'>Report</a> link."
+      ]
+    },
+    {
+      "tag": "2",
+      "patterns": [
+        "2",
+        "2.",
+        "two"
+      ],
+      "responses": [
+        "We apologise for the \ninconvenience. To file a \nreport, please go to the \nnavigation bar and click \non 'Report Form, or click \nthe <a href='http://127.0.0.1:5000/createReportForm'>Report</a> link."
+      ]
+    },
+    {
+      "tag": "3",
+      "patterns": [
+        "3",
+        "3.",
+        "three"
+      ],
+      "responses": [
+        "Unfortunately, you will be \nunable to cancel the order \nonce a purchase is made."
+      ]
+    },
+    {
+      "tag": "4",
+      "patterns": [
+        "4",
+        "4.",
+        "four"
+      ],
+      "responses": [
+        "To report a problem, \nplease go to the \nnavigation bar and click \n'Report Form', or click the \n<a href='http://127.0.0.1:5000/createReportForm'>Report</a> link."
+      ]
+    },
+    {
+      "tag": "5",
+      "patterns": [
+        "5",
+        "5.",
+        "five"
+      ],
+      "responses": [
+        "We accept VISA, \nMastercard as well as \nPaypal."
+      ]
+    },
+    {
+      "tag": "6",
+      "patterns": [
+        "6",
+        "6.",
+        "six"
+      ],
+      "responses": [
+        "Delivery at most takes 1 \nworking day. This ensures \nthat you will receive your \nproducts as fresh as \npossible."
+      ]
+    },
+    {
+      "tag": "7",
+      "patterns": [
+        "7",
+        "7.",
+        "seven"
+      ],
+      "responses": [
+        "To submit your much \nappreciated feedback, \nplease go to the \nnavigation bar and click \n'Feedback Form', or click \nthe <a target='_blank' href='http://127.0.0.1:5000/createFeedbackForm'>Feedback</a> link."
+      ]
+    },
+    {
+      "tag": "8",
+      "patterns": [
+        "8",
+        "8.",
+        "eight"
+      ],
+      "responses": [
+        "To contact our staff, \nplease email us @ \nKMBusiness@gmail.com, \nor click the <a href=\"mailto:KoryoMartBusiness@gmail.com\">Email Us</a> link."
+      ]
+    },
+    {
+      "tag": "payments",
+      "patterns": [
+        "Do you take credit cards?",
+        "Do you accept Mastercard?",
+        "Do you accept debit cards?",
+        "Do you accept VISA?",
+        "Do you accept PayPal?"
+
+      ],
+      "responses": [
+        "We accept VISA, \nMastercard and Paypal",
+        "We accept most major \ncredit cards, and Paypal"
+      ]
+    },
+    {
+      "tag": "payments-unaccepted",
+      "patterns": [
+        "Do you accept AMEX cards?",
+        "Do you accept Grabpay?",
+        "Do you accept Vouchers?"
+      ],
+      "responses": [
+        "Unfortunately, we do not. \nHowever we do accept \nVISA, mastercard, and \nPayPal."
+      ]
+    },
+    {
+      "tag": "delivery",
+      "patterns": [
+        "How long does delivery take?",
+        "How long does shipping take?",
+        "When do I get my delivery?"
+      ],
+      "responses": [
+        "Delivery at most takes 1 \nworking day. This ensures \nthat you will receive your \nproducts as fresh as \npossible.",
+        "Shipping at most takes 1 \nworking day. This ensures \nthat you will receive your \nproducts as fresh as \npossible."
+            ]
+                }
+
+         ]
+}

@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% block title %}Library Loan System - Retrieve Inventory{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href=
+"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+body{
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    }
+    .container{
+    height:1700px;
+    }
+    .filterDiv {
+      width: 100px;
+      height: 100px;
+      text-align: center;
+      margin: 2px;
+      display: none;
+
+    }
+
+    .show {
+      display:block;
+    }
+
+    header#btnContainer{
+    text-align: center;
+    }
+
+    button.btn{
+    all: unset;
+    padding: 5px;
+
+    font-size: 20px;
+    }
+
+    button.btn:hover{
+    background-color: #c2312b;
+    color: white;
+    }
+
+    button.btn:active{
+    background-color: #c2312b;
+    color: white;
+    }
+
+</style>
+{% for message in get_flashed_messages() %}
+ <div class="alert alert-success alert-dismissible fade show" role="alert" style="display:static;">
+  <strong>{{message}}</strong>
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+
+
+
+{% if count_search > 0 %}
+
+<div class="container">
+    <div class="row">
+
+        <br>
+        {% for inventory in search_list %}
+         <div class="col-md-3 mt-3">
+            <div class="card" >
+                <img class="bd-placeholder-img card-img-top" width="100%" height="230" src="./static/Images/uploads/{{inventory.get_product_image() }}" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/></img>
+                <div class="card-body">
+                    {% if inventory.get_discount()|int > 0 %}
+                    <p style="text-shadow: 1px 1px 2px #000; color: #f00; transform: rotate(-15deg); position:absolute; top:10%; left:20%;"> Discount {{inventory.get_discount() }} %</p>
+                    {% endif %}
+                    <h5 class="text-center"> {{ inventory.get_product_name() }} </h5>
+                    <p class="text-center"> Price ${{ inventory.get_price() }} </p>
+                </div>
+                <div class="card-footer" style="height:50px;">
+                    <a href="{{url_for('productPage', id=inventory.get_inventory_id())}}" class="float-right float-left btn btn-sm btn-primary" > Details</a>
+                </div>
+            </div>
+         </div>
+        {% endfor %}
+    </div>
+</div>
+{% else %}
+
+
+        <br>
+<div class="container">
+    <div class="row">
+        {% for inventory in inventory_list %}
+         <div class="col-md-3 mt-3">
+            <div class="card" >
+                <img class="bd-placeholder-img card-img-top" width="100%" height="225" src="./static/Images/uploads/{{inventory.get_product_image() }}" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/></img>
+                <div class="card-body">
+                    {% if inventory.get_discount()|int > 0 %}
+                    <p style="text-shadow: 1px 1px 2px #000; color: #f00; transform: rotate(-15deg); position:absolute; top:10%; left:20%;"> Discount {{inventory.get_discount() }} %</p>
+                    {% endif %}
+                    <h5 class="text-center"> {{ inventory.get_product_name() }} </h5>
+                    <p class="text-center"> Price ${{ inventory.get_price() }} </p>
+                </div>
+                <div class="card-footer" style="height:50px;">
+                    <a href="{{url_for('productPage', id=inventory.get_inventory_id())}}" class="float-right float-left btn btn-sm btn-primary" > Details</a>
+                </div>
+            </div>
+         </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+<script>
+
+
+filterSelection("all")
+function filterSelection(c) {
+  var x, i;
+  x = document.getElementsByClassName("filterDiv");
+  if (c == "all") c = "";
+  // Add the "show" class (display:block) to the filtered elements, and remove the "show" class from the elements that are not selected
+  for (i = 0; i < x.length; i++) {
+    removeClass(x[i], "show");
+    if (x[i].className.indexOf(c) > -1) addClass(x[i], "show");
+  }
+}
+
+// Show filtered elements
+function addClass(element, name) {
+  var i, arr1, arr2;
+  arr1 = element.className.split(" ");
+  arr2 = name.split(" ");
+  for (i = 0; i < arr2.length; i++) {
+    if (arr1.indexOf(arr2[i]) == -1) {
+      element.className += " " + arr2[i];
+    }
+  }
+}
+
+// Hide elements that are not selected
+function removeClass(element, name) {
+  var i, arr1, arr2;
+  arr1 = element.className.split(" ");
+  arr2 = name.split(" ");
+  for (i = 0; i < arr2.length; i++) {
+    while (arr1.indexOf(arr2[i]) > -1) {
+      arr1.splice(arr1.indexOf(arr2[i]), 1);
+    }
+  }
+  element.className = arr1.join(" ");
+}
+
+var btnContainer = document.getElementById("btnContainer");
+var btns = btnContainer.getElementsByClassName("btn");
+for (var i = 0; i < btns.length; i++) {
+  btns[i].addEventListener("click", function() {
+    var current = document.getElementsByClassName("active");
+    current[0].className = current[0].className.replace(" active", "");
+    this.className += " active";
+  });
+}
+</script>
+{% endblock %}

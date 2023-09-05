@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}Library Loan System - Retrieve Inventory{% endblock %}
+
+{% block content %}
+<div class="container">
+    <br>
+    <div class="row">
+
+        <table class="table table-sm">
+            <thead>
+            <th>No.</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Discount</th>
+            <th>Subtotal</th>
+            <th>Delete</th>
+            </thead>
+            <tbody>
+            {% set counter = namespace(value=0) %}
+            {% for cart in cart_list %}
+                {% if cart.get_user_id() == current_user.get_id() %}
+            <tr>
+                <form action="{{url_for('update_quantity', id=cart.get_cart_id())}}" method="POST">
+                    {% set counter.value=counter.value+1 %}
+                <td>{{ counter.value }}</td>
+                <td>{{ cart.get_product_name() }}</td>
+                <td>$ {{cart.get_price()}} </td>
+
+                <td>
+
+                    <label for ="">Quantity: </label>
+                    <input type="number" name="quantity" id="" value="{{cart.get_quantity_bought()}}" min="1" max="{{cart.get_quantity()}}" onchange="this.form.submit()">
+
+                </td>
+                <td>{{cart.get_discount()}} %</td>
+                <td>$ {{ cart.set_subtotal(cart.get_price(),cart.get_discount(),cart.get_quantity_bought())}}</td>
+                </form>
+
+
+                <td><form action="{{url_for('delete_cart', id=cart.get_cart_id())}}" method="POST">
+<button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#myModal_{{cart.get_cart_id()}}">
+  Delete
+</button>
+
+<!-- The Modal -->
+<div class="modal" id="myModal_{{cart.get_cart_id()}}">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">Delete Confirmation</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body">
+        Are you sure you want to delete {{cart.get_product_name()}} ?
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <input type="submit" value="Delete" class="btn btn-danger">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+            </form>
+                </td>
+            </tr>
+                {% else %}
+                {% endif %}
+            {% endfor %}
+
+
+            </tbody>
+        </table>
+        {% if counter.value>0 %}
+        <br>
+        <p>Total Price : $ {{total_price}}</p>
+        <br>
+        <form action="/confirmPage" method="POST">
+                <button type="submit" class="btn btn-sm btn-warning"> Confirm Purchase</button>
+        </form>
+        {% else %}
+        <p>Empty Cart</p>
+        {% endif %}
+
+    </div>
+</div>
+
+
+
+
+
+{% endblock %}
+

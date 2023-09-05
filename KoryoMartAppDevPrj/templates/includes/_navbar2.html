@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Bootstrap All in One Navbar</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Merienda+One">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+<script src="https://kit.fontawesome.com/ad55531dcb.js" crossorigin="anonymous"></script>
+<style>
+body {
+	background: #eeeeee;
+    font-family: 'Varela Round', sans-serif;
+
+}
+.form-inline {
+	display: inline-block;
+}
+.navbar-header.col {
+	padding: 0 !important;
+}
+.navbar {
+
+	background: #c2312b;
+	padding-left: 16px;
+	padding-right: 16px;
+	height: 100px;
+	border-bottom: 1px solid #d6d6d6;
+	box-shadow: 0 0 4px rgba(0,0,0,.1);
+}
+.nav-link img {
+	border-radius: 50%;
+	width: 36px;
+	height: 36px;
+	margin: -8px 0;
+	float: left;
+	margin-right: 10px;
+}
+a.navbar-brand img {
+  height: 100px;
+  width: 100px;
+}
+
+.navbar .navbar-brand {
+	color: #555;
+	padding-left: 0;
+	padding-right: 14%;
+	font-family: 'Merienda One', sans-serif;
+}
+.navbar .navbar-brand i {
+	font-size: 20px;
+	margin-right: 5px;
+}
+.search-box {
+	position: relative;
+}
+.search-box input {
+	box-shadow: none;
+	padding-right: 35px;
+	border-radius: 3px !important;
+}
+.search-box .input-group-addon {
+	min-width: 35px;
+	border: none;
+	background: transparent;
+	position: absolute;
+	right: 0;
+	z-index: 9;
+	padding: 7px;
+	height: 100%;
+}
+.search-box i {
+	color: #a0a5b1;
+	font-size: 19px;
+}
+.navbar .nav-item i {
+	font-size: 18px;
+}
+.navbar .dropdown-item i {
+	font-size: 16px;
+	min-width: 22px;
+}
+.navbar .nav-item.open > a {
+	background: none !important;
+}
+.navbar .dropdown-menu {
+	border-radius: 1px;
+	border-color: #e5e5e5;
+	box-shadow: 0 2px 8px rgba(0,0,0,.05);
+}
+.navbar .dropdown-menu a {
+	color: #c2312b;
+	padding: 8px 20px;
+	line-height: normal;
+}
+.navbar .dropdown-menu a:hover, .navbar .dropdown-menu a:active {
+	color: #333;
+}
+.navbar .dropdown-item .material-icons {
+	font-size: 21px;
+	line-height: 16px;
+	vertical-align: middle;
+	margin-top: -2px;
+}
+.navbar .badge {
+	color: #fff;
+	background: #f44336;
+	font-size: 11px;
+	border-radius: 20px;
+	position: absolute;
+	min-width: 10px;
+	padding: 4px 6px 0;
+	min-height: 18px;
+	top: 5px;
+}
+.navbar a.notifications, .navbar a.messages {
+	position: relative;
+	margin-right: 10px;
+}
+.navbar a.messages {
+	margin-right: 20px;
+}
+.navbar a.notifications .badge {
+	margin-left: -8px;
+}
+.navbar a.messages .badge {
+	margin-left: -4px;
+}
+.navbar .active a, .navbar .active a:hover, .navbar .active a:focus {
+	background: transparent !important;
+}
+@media (min-width: 1200px){
+	.form-inline .input-group {
+		width: 300px;
+		margin-left: 30px;
+	}
+}
+@media (max-width: 1199px){
+	.form-inline {
+		display: block;
+		margin-bottom: 10px;
+	}
+	.input-group {
+		width: 100%;
+	}
+}
+</style>
+</head>
+<body>
+<nav class="navbar navbar-expand-xl navbar-dark">
+	<a class="navbar-brand" href="/"><img src="/static/Images/KoryoMart2.png"/></a>
+
+	<!-- Collection of nav links, forms, and other content for toggling -->
+	<div id="navbarCollapse" class="collapse navbar-collapse justify-content-start">
+		{% if current_user.is_authenticated %}
+		<div class="navbar-nav" >
+
+			<a href="/" class="nav-item nav-link active" >Home</a>
+          <a href="/shop" class="nav-item nav-link">Shop</a>
+			<a href="/aboutUs" class="nav-item nav-link">About</a>
+			<div class="nav-item dropdown">
+				<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Contact Us</a>
+				<div class="dropdown-menu">
+					<a href="/createReportForm" class="dropdown-item">Report an Issue</a>
+					<a href=/createFeedbackForm class="dropdown-item">Provide Feedback</a>
+
+				</div>
+			</div>
+		</div>
+		<form class="navbar-form form-inline" action="/shop" method="POST">
+			<div class="input-group search-box">
+				<input type="text" id="search1" name="search" class="form-control" placeholder="Search Product" onchange="this.form.submit()">
+				<span class="input-group-addon"><i class="material-icons">&#xE8B6;</i></span>
+			</div>
+		</form>
+		<div class="navbar-nav ml-auto">
+			<a href="/retrieveCart" class="nav-item nav-link notifications" style="right: 30%"><i class="fa-solid fa-cart-shopping"></i><span class="badge"></span></a>
+			<div class="nav-item dropdown" style="right: 30%">
+				{% if current_user.getprofile_picture() %}
+				<a href="#" data-toggle="dropdown" class="nav-link dropdown-toggle user-action"><img src="{{ current_user.getprofile_picture() }}" class="avatar" alt="Avatar">
+					{{current_user.getusername()}} <b class="caret"></b></a>
+				{% else %}
+					<a href="#" data-toggle="dropdown" class="nav-link dropdown-toggle user-action"><img src="./static/Images/profileicon.jpg" class="avatar" alt="Avatar">
+					{{current_user.getusername()}} <b class="caret"></b></a>
+				{% endif %}
+				<div class="dropdown-menu">
+					<a href="/update" class="dropdown-item"><i class="fa fa-user-o"></i> Profile</a></a>
+<!--					{% if current_user.getrole() == "admin" %}-->
+<!--						<li><a class="dropdown-item" href="/createInventory">Add Item</a></li>-->
+<!--						<li><a class="dropdown-item" href="/retrieveInventory">Item Stock</a></li>-->
+<!--						<li><a class="dropdown-item" href="/retrieveSales">Retrieve Sales</a></li>-->
+<!--						<li><a class="dropdown-item" href="/createReportForm">Report an Issue</a></li>-->
+<!--						<li><a class="dropdown-item" href="/createFeedbackForm">Provide Feedback</a></li>-->
+<!--						  <li><hr class="dropdown-divider"></li>-->
+<!--						<li><a class="dropdown-item" href="/retrieveFeedbackForm">Feedback Data</a></li>-->
+<!--						<li><a class="dropdown-item" href="/retrieveReportForm">Report Data</a></li>-->
+<!--						  <li><a class="dropdown-item" href="/customerchatlogs">Customer Chat Logs</a></li>-->
+<!--						  <li><hr class="dropdown-divider"></li>-->
+<!--						<li><a class="dropdown-item" href="/InventoryGeneration">Inventory Graph</a></li>-->
+<!--						<li><a class="dropdown-item" href="/SalesGeneration">Sales Graph</a></li>-->
+<!--						<li><hr class="dropdown-divider"></li>-->
+<!--						<li><a class="dropdown-item" href="#">Something else here</a></li>-->
+<!--					</ul>-->
+<!--					{% endif %}-->
+					<div class="dropdown-divider"></div>
+					<a href="/Logout" class="dropdown-item"><i class="material-icons">&#xE8AC;</i> Logout</a></a>
+
+				</div>
+			</div>
+		</div>
+		{% endif %}
+
+
+		{% if current_user.is_anonymous %}
+		<div class="navbar-nav" >
+
+			<a href="/" class="nav-item nav-link active" >Home</a>
+          <a href="/shop" class="nav-item nav-link">Shop</a>
+			<a href="/aboutUs" class="nav-item nav-link">About</a>
+			<div class="nav-item dropdown">
+				<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Contact Us</a>
+				<div class="dropdown-menu">
+					<a href="/createReportForm" class="dropdown-item">Report an Issue</a>
+					<a href=/createFeedbackForm class="dropdown-item">Provide Feedback</a>
+
+				</div>
+			</div>
+		</div>
+		<form class="navbar-form form-inline" action="/shop" method="POST">
+			<div class="input-group search-box">
+				<input type="text" id="search" name="search" class="form-control" placeholder="Search Product" onchange="this.form.submit()">
+				<span class="input-group-addon"><i class="material-icons">&#xE8B6;</i></span>
+			</div>
+		</form>
+		<div class="navbar-nav ml-auto">
+			<a href="/retrieveCart" class="nav-item nav-link notifications"><i class="fa-solid fa-cart-shopping"></i><span class="badge"></span></a>
+			<a href="/Login" class="nav-item nav-link">Log In</a>
+			<a href="/Signup" class="nav-item nav-link">Sign Up</a>
+		</div>
+		{% endif %}
+	</div>
+</nav>
+</body>
+</html>

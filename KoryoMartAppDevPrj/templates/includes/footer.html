@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Footer Design</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Facebook Icon -->
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+
+  <!-- Kyoro Mart Icons -->
+  <script src="https://kit.fontawesome.com/ad55531dcb.js" crossorigin="anonymous"></script>
+</head>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+.footer{
+	line-height: 1.5;
+	font-family: 'Poppins', sans-serif;
+}
+*{
+	margin:0;
+	padding:0;
+	box-sizing: border-box;
+}
+.container{
+	max-width: 1170px;
+	margin:auto;
+}
+.row{
+	display: flex;
+	flex-wrap: wrap;
+}
+ul{
+	list-style: none;
+}
+.footer{
+	background-color: #c2312b;
+    padding: 15px;
+}
+.footer-col{
+   width: 25%;
+   padding: 0 15px;
+}
+.footer-col h4{
+	font-size: 22px;
+	color: #ffffff;
+	text-transform: capitalize;
+	margin-bottom: 35px;
+	font-weight: bold;
+	position: relative;
+}
+.footer-col h4::before{
+	content: '';
+	position: absolute;
+	left:0;
+	bottom: -10px;
+	background-color: #f1c232;
+	height: 2px;
+	box-sizing: border-box;
+	width: 50px;
+}
+.footer-col ul li:not(:last-child){
+	margin-bottom: 10px;
+}
+.footer-col ul li p{
+	font-size: 14px;
+	text-transform: capitalize;
+	color: #ffffff;
+	text-decoration: none;
+	font-weight: 300;
+	color: #ffffff;
+	display: block;
+	transition: all 0.3s ease;
+}
+.footer-col ul li a{
+	font-size: 16px;
+	text-transform: capitalize;
+	color: #ffffff;
+	text-decoration: none;
+	font-weight: 300;
+	color: #bbbbbb;
+	display: block;
+	transition: all 0.3s ease;
+}
+.footer-col ul li a:hover{
+	color: #ffffff;
+	padding-left: 8px;
+}
+.footer-col .social-links a{
+	display: inline-block;
+	height: 40px;
+	width: 40px;
+	background-color: rgba(255,255,255,0.2);
+	margin:0 10px 10px 0;
+	text-align: center;
+	line-height: 40px;
+	border-radius: 50%;
+	color: #ffffff;
+	transition: all 0.5s ease;
+}
+.footer-col .social-links a:hover{
+	color: #24262b;
+	background-color: #ffffff;
+}
+
+
+
+
+.footer-col-2 {
+	width: 25%;
+	padding: 0 15px;
+}
+
+.footer-col-2 h4 {
+	font-size: 18px;
+	color: #c2312b;
+	text-transform: capitalize;
+	margin-bottom: 35px;
+	font-weight: 500;
+	position: relative;
+}
+
+.footer-col-2 h4::before {
+	content: '';
+	position: absolute;
+	left: 0;
+	bottom: -10px;
+	background-color: #c2312b;
+	height: 2px;
+	box-sizing: border-box;
+	width: 50px;
+}
+
+.footer-col-2 ul li:not(:last-child) {
+	margin-bottom: 10px;
+}
+
+.footer-col-2 ul li p {
+	font-size: 16px;
+	text-transform: capitalize;
+	color: #c2312b;
+	text-decoration: none;
+	font-weight: 300;
+	color: #c2312b;
+	display: block;
+	transition: all 0.3s ease;
+}
+
+
+
+
+.footer-col-3 {
+	width: 25%;
+	padding: 0 15px;
+}
+
+.footer-col-3 h4 {
+	font-size: 18px;
+	color: #c2312b;
+	text-transform: capitalize;
+	margin-bottom: 35px;
+	font-weight: 500;
+	position: relative;
+}
+
+.footer-col-3 h4::before {
+	content: '';
+	position: absolute;
+	left: 0;
+	bottom: -10px;
+	background-color: #c2312b;
+	height: 2px;
+	box-sizing: border-box;
+	width: 50px;
+}
+
+.footer-col-3 ul li:not(:last-child) {
+	margin-bottom: 10px;
+}
+
+.footer-col-3 ul li p {
+	font-size: 16px;
+	text-transform: capitalize;
+	color: #c2312b;
+	text-decoration: none;
+	font-weight: 300;
+	color: #c2312b;
+	display: block;
+	transition: all 0.3s ease;
+}
+
+
+
+
+.footer-col-4 {
+	width: 25%;
+	padding: 0 15px;
+}
+
+.footer-col-4 h4 {
+	font-size: 18px;
+	color: #ffffff;
+	text-transform: capitalize;
+	margin-bottom: 35px;
+	font-weight: 500;
+	position: relative;
+}
+
+.footer-col-4 h4::before {
+	content: '';
+	position: absolute;
+	left: 0;
+	bottom: -10px;
+	background-color: #f1c232;
+	height: 2px;
+	box-sizing: border-box;
+	width: 50px;
+}
+
+.footer-col-4 ul li:not(:last-child) {
+	margin-bottom: 10px;
+}
+
+.footer-col-4 ul li p {
+	font-size: 16px;
+	text-transform: capitalize;
+	color: #ffffff;
+	text-decoration: none;
+	font-weight: 300;
+	color: #ffffff;
+	display: block;
+	transition: all 0.3s ease;
+}
+
+.footer-col-4 ul li a {
+	font-size: 16px;
+	text-transform: capitalize;
+	color: #ffffff;
+	text-decoration: none;
+	font-weight: 300;
+	color: #bbbbbb;
+	display: block;
+	transition: all 0.3s ease;
+}
+
+.footer-col-4 ul li a:hover {
+	color: #ffffff;
+	padding-left: 8px;
+}
+
+.footer-col-4 .social-links a {
+	display: inline-block;
+	height: 40px;
+	width: 40px;
+	background-color: rgba(255, 255, 255, 0.2);
+	margin: 0 10px 10px 0;
+	text-align: center;
+	line-height: 40px;
+	border-radius: 50%;
+	color: #ffffff;
+	transition: all 0.5s ease;
+}
+
+.footer-col-4 .social-links a:hover {
+	color: #24262b;
+	background-color: #ffffff;
+}
+
+
+.footer-bottom {
+	background: #c2312b;
+	width: 100vw;
+	padding: 20px 0;
+	text-align: left;
+}
+.footer-bottom p {
+	font-size: x-small;
+	word-spacing: 2px;
+	color: #ffffff;
+}
+
+/responsive/
+@media(max-width: 767px){
+  .footer-col{
+    width: 50%;
+    margin-bottom: 30px;
+}
+}
+@media(max-width: 574px){
+  .footer-col{
+    width: 100%;
+}
+}
+</style>
+<body>
+
+  <footer class="footer">
+  	 <div class="container">
+  	 	<div class="row">
+  	 		<div class="footer-col">
+  	 			<h4>Koryo Mart (고려마트)</h4>
+  	 			<ul>
+					<li>
+						<p><i class="fa-solid fa-location-dot"></i> Address: 4 Toh Tuck Link #04-00 Koryo Bldg, S596226</p>
+					</li>
+					<li>
+						<p><i class="fa-solid fa-phone"></i> Phone: (+65) 6462-5331</p>
+					</li>
+					<li>
+						<p><i class="fa-solid fa-envelope"></i> Email: koryomart@gmail.com</p>
+					</li>
+					<li>
+						<p><i class="fa-solid fa-clock"></i> Working Days/Hours: Mon-Fri / 8:00 AM - 6:00 PM</p>
+					</li>
+  	 			</ul>
+  	 		</div>
+  	 		<div class="footer-col-2">
+  	 			<h4>get help</h4>
+  	 			<ul>
+  	 				<li><p>FAQ</p></li>
+  	 				<li><p>shipping</p></li>
+  	 				<li><p>returns</p></li>
+  	 				<li><p>order status</p></li>
+  	 				<li><p>payment options</p></li>
+  	 			</ul>
+  	 		</div>
+  	 		<div class="footer-col-3">
+  	 			<h4>online shop</h4>
+  	 			<ul>
+  	 				<li><p>watch</p></li>
+  	 				<li><p>bag</p></li>
+  	 				<li><p>shoes</p></li>
+  	 				<li><p>dress</p></li>
+  	 			</ul>
+  	 		</div>
+  	 		<div class="footer-col-4">
+  	 			<h4>follow us</h4>
+  	 			<div class="social-links">
+  	 				<a href="#"><i class="fab fa-facebook-f"></i></a>
+  	 			</div>
+  	 		</div>
+  	 	</div>
+		<div class="footer-bottom">
+			<p>&copy; Copyright 2016 Koryo Trading Pte Ltd. All Rights Reserved.</p>
+		</div>
+  	 </div>
+  </footer>
+
+</body>
+</html>

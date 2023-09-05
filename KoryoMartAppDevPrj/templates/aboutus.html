@@ -1,0 +1,185 @@
+{% extends "basewithchatbot.html" %}
+{% block title %}Library Loan System - Product Page{% endblock %}
+
+{% block content %}
+
+<style>
+
+.container-fluid {
+margin: 0px;
+padding: 0px;
+}
+.about-section{
+  background: url(static/Images/koryomartpic.png) no-repeat left;
+  background-size: 60%;
+  background-color: #fdfdfd;
+  overflow: hidden;
+  padding: 100px 0;
+  background-color: #F9EBC8;
+}
+
+.inner-container{
+  width: 55%;
+  float: right;
+  background-color: #fdfdfd;
+  padding: 150px;
+}
+
+.inner-container h1{
+  margin-bottom: 30px;
+  font-size: 30px;
+  font-weight: 900;
+}
+
+<!--.text{-->
+<!--  font-size: 20px;-->
+<!--  color: #545454;-->
+<!--  line-height: 30px;-->
+<!--  text-align: justify;-->
+<!--  margin-bottom: 40px;-->
+<!--}-->
+
+<!--.skills{-->
+<!--  display: flex;-->
+<!--  justify-content: space-between;-->
+<!--  font-weight: 700;-->
+<!--  font-size: 13px;-->
+<!--}-->
+
+<!--span {-->
+<!--  background-->
+<!--  font-weigh-->
+<!--}-->
+
+img{
+    width: 100%;
+}
+
+.blog-post{
+    width: 1000px;
+    height: 600px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    border-radius: 20px;
+}
+
+.blog-post-image{
+    min-width: 700px;
+    max-width: 400px;
+    margin-left: 50px;
+    height: 450px;
+    transform: translateX(-8rem);
+    position: relative;
+}
+
+.blog-post-image img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 12px;
+}
+
+.text{
+    margin-bottom: 40px;
+    font-size: 15px;
+}
+
+#header {
+text-align: center;
+}
+
+.map {
+text-align: center;
+
+</style>
+
+
+<div class="blog-post">
+    <div class="blog-post-image">
+        <img src="static/Images/koryomartpic.png" alt="">
+    </div>
+
+    <div class="blog-post-info">
+        <div class="blog-post-date">
+            <div class="centeredBox">
+		        <span id="typewriter" data-array="" style="font-size: 23px; font-weight: bold"></span>
+		        <span class="cursor"></span>
+	        </div>
+
+            <script>
+            // The typewriter element
+            var typeWriterElement = document.getElementById('typewriter');
+
+            // The TextArray:
+            var textArray = ["About Us | 우리에 대해", "I love Koryo Mart |     나는 고려 마트를 사랑"];
+
+            // You can also do this by transfering it through a data-attribute
+            // var textArray = typeWriterElement.getAttribute('data-array');
+
+
+            // function to generate the backspace effect
+            function delWriter(text, i, cb) {
+                if (i >= 0 ) {
+                    typeWriterElement.innerHTML = text.substring(0, i--);
+                    // generate a random Number to emulate backspace hitting.
+                    var rndBack = 10 + Math.random() * 100;
+                    setTimeout(function() {
+                        delWriter(text, i, cb);
+                    },rndBack);
+                } else if (typeof cb == 'function') {
+                    setTimeout(cb,1000);
+                }
+            };
+
+            // function to generate the keyhitting effect
+            function typeWriter(text, i, cb) {
+                if ( i < text.length+1 ) {
+                    typeWriterElement.innerHTML = text.substring(0, i++);
+                    // generate a random Number to emulate Typing on the Keyboard.
+                    var rndTyping = 250 - Math.random() * 100;
+                    setTimeout( function () {
+                        typeWriter(text, i++, cb)
+                    },rndTyping);
+                } else if (i === text.length+1) {
+                    setTimeout( function () {
+                        delWriter(text, i, cb)
+                    },1000);
+                }
+            };
+
+            // the main writer function
+            function StartWriter(i) {
+                if (typeof textArray[i] == "undefined") {
+                    setTimeout( function () {
+                        StartWriter(0)
+                    },1000);
+                } else if(i < textArray[i].length+1) {
+                    typeWriter(textArray[i], 0, function () {
+                        StartWriter(i+1);
+                    });
+                }
+            };
+            // wait one second then start the typewriter
+            setTimeout( function () {
+                StartWriter(0);
+            },1000);
+            </script>
+
+            <p class="text">As the most well-known Korean food supplier in the Singapore market, we strive to deliver food of the <span style="color: red">best quality</span> to our customers and take pride in providing the best products for you.
+                At Koryo, we constantly follow rigorous food safety practices and catch up with friendly services to ensure that the food we provide is safe and <span style="color: red">our customers are happy</span>.
+            </p>
+
+        </div>
+    </div>
+</div>
+
+<div>
+    <h2 id="header" style="font-weight: bold">Where to find us?</h2>
+    <div class="map">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d127639.22421582596!2d103.77953243693091!3d1.3408936823519901!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31da160d8ff65503%3A0x6b74b3761a82e576!2sKoryo%20Mart%20Compass%20one!5e0!3m2!1sen!2ssg!4v1676301872748!5m2!1sen!2ssg"
+                width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+</div>
+{% endblock %}

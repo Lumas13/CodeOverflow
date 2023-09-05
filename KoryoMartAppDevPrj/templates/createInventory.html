@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Library Loan System - Report Form{% endblock %}
+
+{% block content %}
+{% from "includes/_formHelper.html" import render_field %}
+
+
+<link rel="stylesheet" href="./static/Css/formstyle.css">
+
+<form method="POST" action="" enctype="multipart/form-data">
+  <h2 class="display-4">Create Inventory</h2>
+  <div class="form-container">
+    <div class="contact-box">
+  <div class="form-group">
+      {{ render_field(form.product_name, class="form-control") }}
+
+  </div>
+  <div class="form-group">
+    {{ render_field(form.product_desc, class="form-control") }}
+  </div>
+  <div class="form-group">
+    {{ render_field(form.category, class="form-control") }}
+  </div>
+  <div class="form-group">
+     {{ render_field(form.price, class="form-control") }}
+  </div>
+      <div class="form-group">
+    {{ render_field(form.discount, class="form-control") }}
+  </div>
+      <div class="form-group">
+      {{ render_field(form.quantity, class="form-control") }}
+    </div>
+      <div class="form-group">
+      {{ render_field(form.product_image, class="form-control") }}
+    </div>
+
+      <input type="submit" value="Submit" class="btn"/>
+    </div>
+    </div>
+</form>
+{% endblock %}

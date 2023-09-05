@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Library Loan System - Retrieve Inventory{% endblock %}
+<link rel="stylesheet" href="../static/Css/update.css">
+{% block content %}
+<div class="container">
+    <br>
+    <div class="row">
+        <table class="table table-sm">
+            <thead>
+            <th>No.</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Discount</th>
+            <th>Subtotal</th>
+            </thead>
+            <tbody>
+            {% set counter = namespace(value=0) %}
+            {% for cart in cart_list %}
+            {% if cart.get_user_id() == current_user.get_id() %}
+            <tr>
+                {% set counter.value=counter.value+1 %}
+                <td>{{ counter.value }} </td>
+                <td>{{ cart.get_product_name() }}</td>
+                <td>$ {{cart.get_price()}} </td>
+                <td>{{cart.get_quantity_bought()}} </td>
+                <td>{{cart.get_discount()}} %</td>
+                <td>$ {{ cart.set_subtotal(cart.get_price(),cart.get_discount(),cart.get_quantity_bought())}}</td>
+            </tr>
+            {% else %}
+            {% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+        <br>
+        {% set max_points = namespace(value=current_user.getpoints()) %}
+        {% if current_user.getpoints() > total_price_without_discount %}
+        {% set max_points.value=total_price_without_discount %}
+        {% endif %}
+
+        <form action="/confirmPage" method="POST">
+            <label for ="">Points Redeemables: </label>
+                    <input type="range" name="points" value="{{point_discount}}" min="0.0" max="{{max_points.value}}" onchange="this.form.submit()">
+            <p style="font-size:10px; display:inline;" > [{{point_discount}}] (You have {{points_left}} points left)</p>
+
+        </form>
+        <br>
+        <br>
+
+        <form action="/addSales" method="POST">
+                <label for ="">Shipping Address : </label>
+                <input type="text" name="address" id="" value="{{user.getaddress()}}" style="width:300px;"> <br> <br>
+                <label for="sel1">Credit Card:</label>
+                              <select class="form-control" id="sel1" >
+                                  {% for i in card_list %}
+                                  <option>POSB/DBS {{i.set_masked_card_no(i.get_card_no())}}
+                                  <option>
+                                  {% endfor %}
+                              </select>
+                                    <a href="/addCard" style="color:blue;float:right;">Add Card?</a>
+
+            <br>
+            <p>Points Redeemables Used : <input style="all: unset;" type="number" name="pointsSales"  value="{{point_discount}}" min="{{point_discount}}" max="{{point_discount}}"></p>
+
+            <p>Total Price : $ {{total_price}}</p>
+            <br>
+
+            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#myModal">
+  Confirm Purchase
+</button>
+
+						<!-- Delete Modal HTML -->
+						<div id="myModal" class="modal fade">
+							<div class="modal-dialog">
+								<div class="modal-content">
+										<div class="modal-header">
+											<h4 class="modal-title">Confirm Purchase</h4>
+											<button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">&times;</button>
+										</div>
+										<div class="modal-body">
+											<p>Are you sure you want to purchase items?</p>
+											<p class="text-danger"><small>This action cannot be undone.</small></p>
+										</div>
+										<div class="modal-footer">
+											<input type="button" class="btn btn-default" data-bs-dismiss="modal" value="Cancel">
+											<input type="submit" value="Confirm" class="btn btn-success">
+										</div>
+                                    </div>
+                            </div>
+                        </div>
+        </form>
+
+    </div>
+</div>
+{% endblock %}

@@ -19,7 +19,7 @@ import plotly.graph_objects as go
 from flask import Flask, render_template, request, redirect, url_for, jsonify, flash
 from Forms import CreateFeedbackForm, CreateReportForm
 import shelve, FeedbackForm, ReportForm
-from chat import get_response
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'hyenen_kekrb'
@@ -1213,43 +1213,6 @@ def update_status(id):
     db.close()
 
     return redirect(url_for('retrieve_report'))
-
-
-@app.post("/predict")
-def predict():
-    text = request.get_json().get("message")
-    response = get_response(text)
-    message = {"answer": response}
-    return jsonify(message)
-
-
-@app.route('/customerchatlogs')
-def retrieve_conversation():
-    conversation_dict = {}
-    db = shelve.open('db/Conversation/conversation.db', 'r')
-    conversation_dict = db['Conversation']
-    db.close()
-
-    conversation_list = []
-    for key in conversation_dict:
-        conversation = conversation_dict.get(key)
-        conversation_list.append(conversation)
-
-    return render_template('customerchatlogs.html', count=len(conversation_list), conversation_list=conversation_list)
-
-
-@app.route('/deleteConversation/<int:id>', methods=['POST'])
-def delete_conversation(id):
-    conversation_dict = {}
-    db = shelve.open('db/Conversation/conversation.db', 'w')
-    conversation_dict = db['Conversation']
-
-    conversation_dict.pop(id)
-
-    db['Conversation'] = conversation_dict
-    db.close()
-
-    return redirect(url_for('retrieve_conversation'))
 
 
 if __name__ == '__main__':

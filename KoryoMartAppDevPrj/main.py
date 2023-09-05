@@ -1,7 +1,5 @@
 # ACCOUNT MANAGEMENT IMPORT
-from flask import Flask, render_template, redirect, request, url_for
 from models.auth.authforms import SignupForm, LoginForm, UpdateProfileForm, ChangePasswordForm, CreateCreditCardForm
-import shelve
 from models.auth.user import User
 # from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
@@ -10,14 +8,12 @@ import calendar
 from PIL import Image
 import secrets
 # TRANSACTION PROCESSING INNIT
-from flask import Flask, render_template, request, redirect, url_for
-from Forms import CreateInventoryForm, CreateSalesForm, CreateCustomerForm
-import shelve, Inventory, Cart, Sales, Card
+from Forms import CreateInventoryForm
+import Inventory, Cart, Sales, Card
 # GRAPH STUFF
 import pandas as pd
 import json
 import plotly
-import plotly.express as px
 import plotly.graph_objects as go
 # CUSTOMER SUPPORT STUFF
 from flask import Flask, render_template, request, redirect, url_for, jsonify, flash
@@ -1050,7 +1046,7 @@ def create_feedback():
     create_feedback_form = CreateFeedbackForm(request.form)
     if request.method == 'POST' and create_feedback_form.validate():
         feedback_dict = {}
-        db = shelve.open('feedback.db', 'c')
+        db = shelve.open('db/Feedback/feedback.db', 'c')
 
         try:
             feedback_dict = db['Feedback']
@@ -1091,7 +1087,7 @@ def create_feedback():
 @app.route('/retrieveFeedbackForm')
 def retrieve_feedback():
     feedback_dict = {}
-    db = shelve.open('feedback.db', 'r')
+    db = shelve.open('db/Feedback/feedback.db', 'r')
     feedback_dict = db['Feedback']
     db.close()
 
@@ -1106,7 +1102,7 @@ def retrieve_feedback():
 @app.route('/deleteFeedback/<int:id>', methods=['POST'])
 def delete_feedback(id):
     feedback_dict = {}
-    db = shelve.open('feedback.db', 'w')
+    db = shelve.open('db/Feedback/feedback.db', 'w')
     feedback_dict = db['Feedback']
 
     feedback_dict.pop(id)
@@ -1127,7 +1123,7 @@ def create_report():
         req.save('./' + app.config['UPLOAD_FOLDER'] + req.filename)
 
         report_dict = {}
-        db = shelve.open('report.db', 'c')
+        db = shelve.open('db/Report/report.db', 'c')
 
         try:
             report_dict = db['Report']
@@ -1171,7 +1167,7 @@ def create_report():
 @app.route('/retrieveReportForm')
 def retrieve_report():
     report_dict = {}
-    db = shelve.open('report.db', 'r')
+    db = shelve.open('db/Report/report.db', 'r')
     report_dict = db['Report']
     db.close()
 
@@ -1186,7 +1182,7 @@ def retrieve_report():
 @app.route('/deleteReport/<int:id>', methods=['POST'])
 def delete_report(id):
     report_dict = {}
-    db = shelve.open('report.db', 'w')
+    db = shelve.open('db/Report/report.db', 'w')
     report_dict = db['Report']
 
     report_dict.pop(id)
@@ -1200,7 +1196,7 @@ def delete_report(id):
 @app.route("/updateStatus/<int:id>", methods=['POST'])
 def update_status(id):
     report_dict = {}
-    db = shelve.open('report.db', 'w')
+    db = shelve.open('db/Report/report.db', 'w')
 
     try:
         if 'Report' in db:
@@ -1230,7 +1226,7 @@ def predict():
 @app.route('/customerchatlogs')
 def retrieve_conversation():
     conversation_dict = {}
-    db = shelve.open('conversation.db', 'r')
+    db = shelve.open('db/Conversation/conversation.db', 'r')
     conversation_dict = db['Conversation']
     db.close()
 
@@ -1245,7 +1241,7 @@ def retrieve_conversation():
 @app.route('/deleteConversation/<int:id>', methods=['POST'])
 def delete_conversation(id):
     conversation_dict = {}
-    db = shelve.open('conversation.db', 'w')
+    db = shelve.open('db/Conversation/conversation.db', 'w')
     conversation_dict = db['Conversation']
 
     conversation_dict.pop(id)

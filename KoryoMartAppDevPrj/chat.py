@@ -13,7 +13,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 with open('intents.json', 'r') as json_data:
     intents = json.load(json_data)
 
-FILE = "data.pth"
+FILE = "github files/data.pth"
 data = torch.load(FILE)
 
 input_size = data["input_size"]
@@ -31,7 +31,7 @@ bot_name = "Koro"
 #111111
 def get_response(msg):
     conversation_dict = {}
-    db = shelve.open('conversation.db', 'c')
+    db = shelve.open('db/Conversation/conversation.db', 'c')
 
     try:
         conversation_dict = db['Conversation']

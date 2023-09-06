@@ -8,6 +8,17 @@ from flask_login import LoginManager
 from wtforms import FileField
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 
+class CreateFoodForm(Form):
+    name = StringField('Food Name', [validators.Length(min=1, max=150), validators.DataRequired()])
+    img = FileField('Image of Food', validators=[FileAllowed(['jpg', 'png', 'jpeg'], 'Images only!')])
+    measure = SelectField('Measure',[validators.DataRequired()], default=(0, "Grams (g)"), choices=[(0, "Grams (g)"), (1, "Pounds (lbs)"), (2, "Ounce (Oz)")])
+    calories = StringField('Calories', [validators.DataRequired()], default='1')
+    carbs = StringField('Carbohydrates', [validators.DataRequired()], default='1')
+    fats = StringField('Fats', [validators.DataRequired()], default='1')
+    protein = StringField('Protein', [validators.DataRequired()], default='1')
+    sodium = StringField('Sodium', [validators.DataRequired()], default='1')
+    sugar = StringField('Sugar', [validators.DataRequired()], default='1')
+
 
 class CreateInventoryForm(Form):
     product_name = StringField('Product Name', [validators.Length(min=1, max=150), validators.DataRequired()])

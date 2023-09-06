@@ -1,21 +1,22 @@
 import Inventory
-# from Food import *
+from Food import *
+
+
 # Cart class
 
-class Diary(): #Diary(Food)
+class Diary(Food):  # Diary(Food)
 
     count_id = 0
 
     # initializer method
-    def __init__(self, name,img, measure,calories, carbs, fats, protein, sodium,sugar, quantity,date,user_id):
+    def __init__(self, name, img, measure, calories, carbs, fats, protein, sodium, sugar, quantity, date, user_id):
         Diary.count_id += 1
-        super().__init__(name,pic, measure,calories, carbs, fats, protein, sodium,sugar)
+        super().__init__(name, img, measure, calories, carbs, fats, protein, sodium, sugar)
         self.__diary_id = Diary.count_id
         self.__quantity = quantity
         self.__subtotal = 0
         self.__date = date
         self.__user_id = user_id
-
 
     # accessor methods
 
@@ -41,13 +42,12 @@ class Diary(): #Diary(Food)
     def set_quantity(self, quantity):
         self.__quantity = quantity
 
-    def set_subtotal(self,calories,quantity):
-        self.__subtotal = float(calories)*float(quantity)
+    def set_subtotal(self, calories, quantity):
+        self.__subtotal = float(calories) * float(quantity)
         return self.__subtotal
 
-    def set_date(self,date):
+    def set_date(self, date):
         self.__date = date
 
-    def set_user_id(self,user_id):
+    def set_user_id(self, user_id):
         self.__user_id = user_id
-

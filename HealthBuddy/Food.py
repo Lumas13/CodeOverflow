@@ -1,5 +1,4 @@
-class Food(): #Diary(Food)
-
+class Food():
     count_id = 0
 
     # initializer method

@@ -1,8 +1,4 @@
-import Inventory
 from Food import *
-
-
-# Cart class
 
 class Diary(Food):  # Diary(Food)
 

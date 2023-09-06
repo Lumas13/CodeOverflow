@@ -252,7 +252,7 @@ table.table .avatar {
 			<div class="table-title">
 				<div class="row">
 					<div class="col-sm-6">
-						<h2>Manage <b>Food</b></h2>
+						<h2>Food <b>Database</b></h2>
 					</div>
 				</div>
 			</div>
@@ -289,12 +289,11 @@ table.table .avatar {
         <td>{{ food.get_sodium() }}</td>
         <td>{{ food.get_sugar() }}</td>
 
-
+{% if current_user.getrole() == 'admin' %}
 <td><a href="/updateFood/{{food.get_food_id()}}" class="btn"><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a></td>
-
 <td><a href="#deleteEmployeeModal" class="delete" data-toggle="modal"><i class="material-icons" data-bs-toggle="modal" data-bs-target="#myModal_{{food.get_food_id()}}" data-toggle="tooltip" title="Delete">&#xE872;</i></a></td>
-
-<td><a href="/foodPage/{{food.get_food_id()}}" class="btn" ><i class="material-icons" data-toggle="tooltip"  title="Add to Diary">&#xE872;</i></a></td>
+{% endif %}
+<td><a href="/foodPage/{{food.get_food_id()}}" class="btn" ><i class="material-icons" data-toggle="tooltip"  title="Add to Diary">&#xe145;</i></a></td>
 						<!-- Delete Modal HTML -->
 						<div id="myModal_{{food.get_food_id()}}" class="modal fade">
 							<div class="modal-dialog">

@@ -1,5 +1,3 @@
-import Cart
-
 class Card():
     count_id = 0
 

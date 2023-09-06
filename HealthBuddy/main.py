@@ -1,29 +1,33 @@
+#FLASK
+from flask import Flask, render_template, request, redirect, url_for, jsonify, flash
+import shelve
+
 # ACCOUNT MANAGEMENT IMPORT
 from models.auth.authforms import SignupForm, LoginForm, UpdateProfileForm, ChangePasswordForm, CreateCreditCardForm
 from models.auth.user import User
-# from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 import time
 from datetime import date
 import calendar
 from PIL import Image
 import secrets
+
 # TRANSACTION PROCESSING INNIT
 from Forms import CreateInventoryForm
 import Inventory, Cart, Sales, Card
+
 # GRAPH STUFF
 import pandas as pd
 import json
 import plotly
 import plotly.graph_objects as go
-# CUSTOMER SUPPORT STUFF
-from flask import Flask, render_template, request, redirect, url_for, jsonify, flash
-from Forms import CreateFeedbackForm, CreateReportForm, CreateFoodForm
-import shelve, FeedbackForm, ReportForm
+
 # DIARY INNIT
 import Diary
 import Food
+from Forms import CreateFoodForm
 from collections import defaultdict
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'hyenen_kekrb'
 login_manager = LoginManager()
@@ -34,8 +38,8 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 app.config['SESSION_TYPE'] = 'filesystem'
 
 
-# test
-# food crud
+
+## START OF FOOD CRUD ##
 @app.route('/createFood', methods=['GET', 'POST'])
 def create_food():
     create_food_form = CreateFoodForm(request.form)
@@ -155,12 +159,9 @@ def delete_food(id):
 
     return redirect(url_for('retrieve_food'))
 
+## END OF FOOD CRUD ##
 
-#
-#
-
-
-# FOODDIARY
+## START OF FOOD DIARY ##
 
 @app.route('/addDiary/<int:id>', methods=["GET", "POST"])
 def addDiary(id):
@@ -250,62 +251,6 @@ def addDiary(id):
             added = True
             print("added")
 
-
-
-
-
-
-
-        # user_id_list = []
-        # product_list = {}
-        # diary_values = []
-        #
-        # for i in diary_dict.values():  # {1:testerbanana
-        #     try:
-        #         product_list[i.get_user_id()].append(i.get_food_id())
-        #     except:
-        #         product_list[i.get_user_id()] = [i.get_food_id()]
-        #
-        #     user_id_list.append(i.get_user_id())
-        #     diary_values.append(i)
-        #     print(product_list)
-        #
-        # if current_user.get_id() not in user_id_list:
-        #     diary = Diary.Diary(food_product.get_name(), food_product.get_img(),food_product.get_measure(), food_product.get_calories(),
-        #                         food_product.get_carbs(),
-        #                         food_product.get_fats(), food_product.get_protein(),
-        #                         food_product.get_sodium(), food_product.get_sugar(), quantity, date,
-        #                         current_user.get_id())
-        #     added = True
-        #
-        # else:
-        #
-        #     print(diary_dict.values())  #
-        #     made = False
-        #     for i in diary_dict.values():  # {1:poop+1 yx poop
-        #         print(f"i.getdate 1 {i.get_date()}")
-        #         if i.get_user_id() == current_user.get_id():
-        #
-        #             if i.get_food_id() in product_list[current_user.get_id()]:
-        #                 print(f"foodname {i.get_name()}")
-        #                 print(f"{i.get_food_id()} = = {product_list[current_user.get_id()]}")
-        #                 if food_product.get_food_id() == i.get_food_id():
-        #                         print(f"i.getdate {i.get_date()}")
-        #                         if i.get_date() == date:
-        #                             i.set_quantity(int(i.get_quantity()) + int(quantity))
-        #                             made = True
-        #                             break
-        #
-        #
-        #
-        #     if made == False:
-        #         if food_product.get_food_id() not in product_list[current_user.get_id()]:
-        #             diary = Diary.Diary(food_product.get_name(), food_product.get_img(),food_product.get_measure(), food_product.get_calories(),
-        #                                 food_product.get_carbs(),
-        #                                 food_product.get_fats(), food_product.get_protein(),
-        #                                 food_product.get_sodium(), food_product.get_sugar(), quantity, date,
-        #                                 current_user.get_id())
-        #             added = True
 
         if added == True:
             for key in diary_dict:  # {1:bronze 6:silver 3: bronze}
@@ -437,8 +382,10 @@ def foodPage(id):
             continue
     return render_template('foodPage.html', food=food_product)
 
+## END OF FOOD DIARY ##
 
-# ACCOUNT MANAGEMENT INNIT
+## START OF ACCOUNTMANAGEMENT ##
+
 # Load the database of user into login_manager
 @login_manager.user_loader
 def load_user(user_id):
@@ -730,8 +677,55 @@ def purchaseHistory():
 
     return render_template('purchaseHistory.html', count=len(sales_list), sales_list=sales_list)
 
+#ADDING CARD CR
+@app.route("/addCard", methods=["GET", "POST"])
+def addCard():
+    creditCard_form = CreateCreditCardForm()
+    if request.method == "POST":
+        # Retrieve the user data from the signup form
+        card_name = creditCard_form.card_name.data
+        credit_number = creditCard_form.credit_number.data
+        credit_cvv = creditCard_form.credit_cvv.data
+        expiry_date = creditCard_form.expiry_date.data
 
-# TRANSACTION PROCESSING INNIT
+        error = None
+        card_dict = {}
+        try:
+            db = shelve.open('db/Card/card', 'c')
+            if 'Card' in db:
+                card_dict = db['Card']
+            else:
+                db['Card'] = card_dict
+
+            card = Card.Card(card_name, credit_number, credit_cvv, expiry_date, current_user.get_id())
+            card_dict[card.get_card_id()] = card
+            db['Card'] = card_dict
+            db.close()
+            return redirect(url_for('update'))
+        except IOError:
+            print("IO Error")
+        except Exception as ex:
+            print(f"Unknown error occurred as {ex}")
+
+    return render_template('CreditCardForm.html', form=creditCard_form)
+
+
+@app.route('/deleteCard/<int:id>', methods=['POST'])
+def delete_card(id):
+    card_dict = {}
+    db = shelve.open('db/Card/card', 'w')
+    card_dict = db['Card']
+
+    card_dict.pop(id)
+
+    db['Card'] = card_dict
+    db.close()
+
+    return redirect(url_for('update'))
+
+## END OF ACCOUNT MANAGEMENT ##
+
+## START OF TRANSACTION PROCESSING ##
 @app.route('/<int:id>')
 def productPage(id):
     inventory_dict = {}
@@ -804,7 +798,7 @@ def shop():
     return render_template('shop.html', inventory_list=inventory_list, search_list=search_list,
                            count_search=count_search)
 
-
+#CART CRUD
 @app.route('/addCart/<int:id>', methods=["GET", "POST"])
 def addCart(id):
     if request.method == "POST":
@@ -1026,52 +1020,7 @@ def confirm_page():
                            total_price_without_discount=total_price_without_discount, points_left=round(points_left, 2))
 
 
-@app.route("/addCard", methods=["GET", "POST"])
-def addCard():
-    creditCard_form = CreateCreditCardForm()
-    if request.method == "POST":
-        # Retrieve the user data from the signup form
-        card_name = creditCard_form.card_name.data
-        credit_number = creditCard_form.credit_number.data
-        credit_cvv = creditCard_form.credit_cvv.data
-        expiry_date = creditCard_form.expiry_date.data
-
-        error = None
-        card_dict = {}
-        try:
-            db = shelve.open('db/Card/card', 'c')
-            if 'Card' in db:
-                card_dict = db['Card']
-            else:
-                db['Card'] = card_dict
-
-            card = Card.Card(card_name, credit_number, credit_cvv, expiry_date, current_user.get_id())
-            card_dict[card.get_card_id()] = card
-            db['Card'] = card_dict
-            db.close()
-            return redirect(url_for('update'))
-        except IOError:
-            print("IO Error")
-        except Exception as ex:
-            print(f"Unknown error occurred as {ex}")
-
-    return render_template('CreditCardForm.html', form=creditCard_form)
-
-
-@app.route('/deleteCard/<int:id>', methods=['POST'])
-def delete_card(id):
-    card_dict = {}
-    db = shelve.open('db/Card/card', 'w')
-    card_dict = db['Card']
-
-    card_dict.pop(id)
-
-    db['Card'] = card_dict
-    db.close()
-
-    return redirect(url_for('update'))
-
-
+#ADDING SALES CR
 @app.route('/addSales', methods=["GET", "POST"])
 def addSales():
     cart_dict = {}
@@ -1166,45 +1115,6 @@ def addSales():
     return redirect(url_for('shop'))
 
 
-# @app.route('/createSales', methods=['GET', 'POST'])
-# def create_sales():
-#     inventory_dict = {}
-#     db = shelve.open('inventory.db', 'r')
-#     inventory_dict = db['Inventory']
-#     db.close()
-#
-#     create_sales_form = CreateSalesForm(request.form)
-#     if request.method == 'POST' and create_sales_form.validate():
-#         sales_dict = {}
-#         db =shelve.open('sales.db','c')
-#
-#         try:
-#                 sales_dict = db['Sales']
-#         except:
-#                 print("Error in retrieving Sales from sales.db.")
-#         product_name = create_sales_form.product_name.data
-#
-#         sales = {}
-#         for key in inventory_dict:
-#             product = inventory_dict.get(key)
-#             product_in_inventory = product.get_product_name()
-#             if product_name == product_in_inventory:
-#                 sales = Sales.Sales(product.get_product_name(),product.get_product_desc(),product.get_price(),product.get_discount(),product.get_quantity(),create_sales_form.quantity_bought.data)
-#                 for i in sales_dict: # 1:bronze 6:silver 3: bronze
-#                     if i == sales.get_sales_id():
-#                        sales.set_sales_id(int(sales.get_sales_id())+1)
-#                 sales_dict[sales.get_sales_id()] = sales
-#             else:
-#                 print("not in inventory")
-#
-#
-#
-#         db['Sales'] = sales_dict
-#         db.close()
-#
-#         return redirect(url_for('retrieve_sales'))
-#     return render_template('createSales.html', form=create_sales_form)
-
 @app.route('/retrieveSales')
 def retrieve_sales():
     sales_dict = {}
@@ -1231,7 +1141,7 @@ def retrieve_sales():
 
     return render_template('retrieveSales.html', count=len(sales_list), sales_list=sales_list)
 
-
+#INVENTORY CRUD
 @app.route('/createInventory', methods=['GET', 'POST'])
 def create_inventory():
     create_inventory_form = CreateInventoryForm(request.form)
@@ -1339,6 +1249,7 @@ def delete_inventory(id):
 
     return redirect(url_for('retrieve_inventory'))
 
+## END OF TRANSACTION PROCESS ##
 
 # GENERATION INNIT
 @app.route('/InventoryGeneration')
@@ -1441,181 +1352,6 @@ def sales_generation():
     graph1JSON = json.dumps(data, cls=plotly.utils.PlotlyJSONEncoder)
 
     return render_template('SalesGeneration.html', graph1JSON=graph1JSON)
-
-
-# CUSTOMER SUPPORT INNNIT
-@app.route('/createFeedbackForm', methods=['GET', 'POST'])
-@login_required
-def create_feedback():
-    create_feedback_form = CreateFeedbackForm(request.form)
-    if request.method == 'POST' and create_feedback_form.validate():
-        feedback_dict = {}
-        db = shelve.open('db/Feedback/feedback.db', 'c')
-
-        try:
-            feedback_dict = db['Feedback']
-        except:
-            print("Error in retrieving Feedback from feedback.db.")
-
-        feedback = FeedbackForm.Feedback(create_feedback_form.name.data, create_feedback_form.email.data,
-                                         create_feedback_form.question1.data, create_feedback_form.question2.data,
-                                         create_feedback_form.question3.data, create_feedback_form.remarks.data)
-        for key in feedback_dict:
-            if key == feedback.get_feedback_id():
-                feedback.set_feedback_id(int(feedback.get_feedback_id()) + 1)
-        feedback_dict[feedback.get_feedback_id()] = feedback
-        db['Feedback'] = feedback_dict
-        db.close()
-
-        answer = create_feedback_form.question1.data
-        if answer != 0:
-            flash("Thank you for your feedback!", "success")
-
-        db = shelve.open('db/customer/users')
-        user_dict = {}
-        user_dict = db['customer']
-        for users in user_dict.values():
-            if users.get_id() == current_user.get_id():
-                users.setusername(create_feedback_form.name.data)
-                users.setemail(create_feedback_form.email.data)
-                db['customer'] = user_dict
-                db.close()
-        return redirect(url_for('home'))
-    else:
-        create_feedback_form.name.data = current_user.getusername()
-        create_feedback_form.email.data = current_user.getemail()
-
-    return render_template('createFeedbackForm.html', form=create_feedback_form)
-
-
-@app.route('/retrieveFeedbackForm')
-def retrieve_feedback():
-    feedback_dict = {}
-    db = shelve.open('db/Feedback/feedback.db', 'r')
-    feedback_dict = db['Feedback']
-    db.close()
-
-    feedback_list = []
-    for key in feedback_dict:
-        feedback = feedback_dict.get(key)
-        feedback_list.append(feedback)
-
-    return render_template('retrieveFeedbackForm.html', count=len(feedback_list), feedback_list=feedback_list)
-
-
-@app.route('/deleteFeedback/<int:id>', methods=['POST'])
-def delete_feedback(id):
-    feedback_dict = {}
-    db = shelve.open('db/Feedback/feedback.db', 'w')
-    feedback_dict = db['Feedback']
-
-    feedback_dict.pop(id)
-
-    db['Feedback'] = feedback_dict
-    db.close()
-
-    return redirect(url_for('retrieve_feedback'))
-
-
-@app.route('/createReportForm', methods=['GET', 'POST'])
-@login_required
-def create_report():
-    create_report_form = CreateReportForm(request.form)
-    if request.method == 'POST' and create_report_form.validate():
-        req = request.files.to_dict()['report_image']
-        req.save('./' + app.config['UPLOAD_FOLDER'] + req.filename)
-
-        report_dict = {}
-        db = shelve.open('db/Report/report.db', 'c')
-
-        try:
-            report_dict = db['Report']
-        except:
-            print("Error in retrieving Report from report.db.")
-
-        report = ReportForm.Report(create_report_form.name.data, create_report_form.email.data,
-                                   create_report_form.contact.data, create_report_form.problem.data,
-                                   create_report_form.other.data, create_report_form.date.data, req.filename,
-                                   create_report_form.remarks.data)
-        for key in report_dict:
-            if key == report.get_report_id():
-                report.set_report_id(int(report.get_report_id()) + 1)
-        report_dict[report.get_report_id()] = report
-        db['Report'] = report_dict
-        db.close()
-
-        answer = create_report_form.name.data
-        if answer != 0:
-            flash("Thank you for submitting your report. We will get back to you as soon as possible.")
-
-        db = shelve.open('db/customer/users')
-        user_dict = {}
-        user_dict = db['customer']
-        for users in user_dict.values():
-            if users.get_id() == current_user.get_id():
-                users.setusername(create_report_form.name.data)
-                users.setemail(create_report_form.email.data)
-                users.setphone_number(create_report_form.contact.data)
-                db['customer'] = user_dict
-                db.close()
-        return redirect(url_for('home'))
-    else:
-        create_report_form.name.data = current_user.getusername()
-        create_report_form.email.data = current_user.getemail()
-        create_report_form.contact.data = current_user.getphone_number()
-
-    return render_template('createReportForm.html', form=create_report_form)
-
-
-@app.route('/retrieveReportForm')
-def retrieve_report():
-    report_dict = {}
-    db = shelve.open('db/Report/report.db', 'r')
-    report_dict = db['Report']
-    db.close()
-
-    report_list = []
-    for key in report_dict:
-        report = report_dict.get(key)
-        report_list.append(report)
-
-    return render_template('retrieveReportForm.html', count=len(report_list), report_list=report_list)
-
-
-@app.route('/deleteReport/<int:id>', methods=['POST'])
-def delete_report(id):
-    report_dict = {}
-    db = shelve.open('db/Report/report.db', 'w')
-    report_dict = db['Report']
-
-    report_dict.pop(id)
-
-    db['Report'] = report_dict
-    db.close()
-
-    return redirect(url_for('retrieve_report'))
-
-
-@app.route("/updateStatus/<int:id>", methods=['POST'])
-def update_status(id):
-    report_dict = {}
-    db = shelve.open('db/Report/report.db', 'w')
-
-    try:
-        if 'Report' in db:
-            report_dict = db['Report']
-        else:
-            db['Report'] = report_dict
-    except:
-        print("Error in opening storage.db")
-
-    report = report_dict.get(id)
-    report.set_status('completed')
-    db['Report'] = report_dict
-
-    db.close()
-
-    return redirect(url_for('retrieve_report'))
 
 
 if __name__ == '__main__':

@@ -1,4 +1,3 @@
-import Inventory
 from Inventory import *
 # Cart class
 

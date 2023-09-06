@@ -271,7 +271,8 @@ table.table .avatar {
         <th>Sodium</th>
         <th>Sugar</th>
         <th>Edit</th>
-          <th>Delete</th>
+        <th>Delete</th>
+		<th>Add to Diary</th>
       </tr>
 </thead>
 				<tbody>
@@ -291,8 +292,9 @@ table.table .avatar {
 
 <td><a href="/updateFood/{{food.get_food_id()}}" class="btn"><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a></td>
 
-						<td><a href="#deleteEmployeeModal" class="delete" data-toggle="modal"><i class="material-icons" data-bs-toggle="modal" data-bs-target="#myModal_{{food.get_food_id()}}" data-toggle="tooltip" title="Delete">&#xE872;</i></a></td>
+<td><a href="#deleteEmployeeModal" class="delete" data-toggle="modal"><i class="material-icons" data-bs-toggle="modal" data-bs-target="#myModal_{{food.get_food_id()}}" data-toggle="tooltip" title="Delete">&#xE872;</i></a></td>
 
+<td><a href="/foodPage/{{food.get_food_id()}}" class="btn" ><i class="material-icons" data-toggle="tooltip"  title="Add to Diary">&#xE872;</i></a></td>
 						<!-- Delete Modal HTML -->
 						<div id="myModal_{{food.get_food_id()}}" class="modal fade">
 							<div class="modal-dialog">

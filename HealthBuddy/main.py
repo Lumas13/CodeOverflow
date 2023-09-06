@@ -4,6 +4,7 @@ from models.auth.user import User
 # from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 import time
+from datetime import date
 import calendar
 from PIL import Image
 import secrets
@@ -20,8 +21,9 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify, f
 from Forms import CreateFeedbackForm, CreateReportForm, CreateFoodForm
 import shelve, FeedbackForm, ReportForm
 # DIARY INNIT
-from Diary import Diary
+import Diary
 import Food
+from collections import defaultdict
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'hyenen_kekrb'
 login_manager = LoginManager()
@@ -159,6 +161,7 @@ def delete_food(id):
 
 
 # FOODDIARY
+
 @app.route('/addDiary/<int:id>', methods=["GET", "POST"])
 def addDiary(id):
     if request.method == "POST":
@@ -168,7 +171,7 @@ def addDiary(id):
         db.close()
 
         diary_dict = {}
-        db2 = shelve.open('db/diary/diary.db', 'c')
+        db2 = shelve.open('db/Diary/diary.db', 'c')
 
         print("added to cart")
 
@@ -180,50 +183,129 @@ def addDiary(id):
         quantity = request.form.get("quantity")
         food_id = request.form.get("food.get_food_id()")
         date = request.form.get("date")
+        print(f"date: {date}")
         food_product = food_dict[int(food_id)]
         print(food_product)
         print(diary_dict)
 
         added = False
-        user_id_list = []
-        product_list = {}
-        diary_values = []
-        for i in diary_dict.values():  # {1:testerbanana
-            try:
-                product_list[i.get_user_id()].append(i.get_name())
-            except:
-                product_list[i.get_user_id()] = [i.get_name()]
+        made = False
+        #new method
+        product_dict = defaultdict(list)
+        for i in diary_dict.values():
+            print(f"i: {i} userid: {i.get_user_id()} current_user: {current_user.get_id()}")
+            if i.get_user_id() == current_user.get_id():
+                if i.get_product_id() in product_dict:
+                    product_dict[int(i.get_product_id())].append(i.get_date())
+                    continue
+                else:
+                    product_dict[int(i.get_product_id())].append(i.get_date())
 
-            user_id_list.append(i.get_user_id())
-            diary_values.append(i)
-            print(product_list)
-
-        if current_user.get_id() not in user_id_list:
-            diary = Diary.Diary(food_product.get_name(), food_product.get_img(), food_product.get_calories(),
-                                food_product.get_carbs(),
-                                food_product.get_fats(), food_product.get_protein(),
-                                food_product.get_sodium(), food_product.get_sugar(), quantity, date,
-                                current_user.get_id())
-            added = True
-
-        else:
-            print(diary_dict.values())  #
-            made = False
-            for i in diary_dict.values():  # {1:testerbanana
-                if i.get_user_id() == current_user.get_id():
-                    if i.get_name() in product_list[i.get_user_id()]:
-                        if food_product.get_name() == i.get_name():
-                            i.set_quantity(int(i.get_quantity()) + int(quantity))
-                            made = True
-                            break
-            if made == False:
-                if food_product.get_product_name() not in product_list[current_user.get_id()]:
-                    diary = Diary.Diary(food_product.get_name(), food_product.get_img(), food_product.get_calories(),
-                                        food_product.get_carbs(),
-                                        food_product.get_fats(), food_product.get_protein(),
-                                        food_product.get_sodium(), food_product.get_sugar(), quantity, date,
-                                        current_user.get_id())
+        print(product_dict)
+        for i in diary_dict.values():
+            print(f"2nd flop i:{i} i.id: {i.get_product_id()} fp.id: {food_product.get_food_id()} i.date: {i.get_date()} t/f {food_product.get_food_id() in product_dict} ")
+            if food_product.get_food_id() in product_dict:
+                    if date in product_dict[food_product.get_food_id()]:
+                        if int(i.get_product_id()) == int(food_product.get_food_id()):
+                            if i.get_date() == date:
+                                i.set_quantity(int(i.get_quantity()) + int(quantity))
+                                print("increase quantity")
+                                made = True
+                                break
+            elif food_product.get_food_id() not in product_dict:
+                    diary = Diary.Diary(food_product.get_name(), food_product.get_img(),food_product.get_measure(), food_product.get_calories(),
+                                             food_product.get_carbs(),
+                                             food_product.get_fats(), food_product.get_protein(),
+                                             food_product.get_sodium(), food_product.get_sugar(), quantity, date,
+                                             current_user.get_id(),food_id)
+                    print("added new")
                     added = True
+            elif food_product.get_food_id() in product_dict:
+                    if date not in product_dict[food_product.get_food_id()]:
+                        diary = Diary.Diary(food_product.get_name(), food_product.get_img(),food_product.get_measure(), food_product.get_calories(),
+                                             food_product.get_carbs(),
+                                             food_product.get_fats(), food_product.get_protein(),
+                                             food_product.get_sodium(), food_product.get_sugar(), quantity, date,
+                                             current_user.get_id(),food_id)
+                        print("added new")
+                        added = True
+
+        print(diary_dict)
+        if len(diary_dict) == 0:
+            diary = Diary.Diary(food_product.get_name(), food_product.get_img(),food_product.get_measure(), food_product.get_calories(),
+                                         food_product.get_carbs(),
+                                         food_product.get_fats(), food_product.get_protein(),
+                                         food_product.get_sodium(), food_product.get_sugar(), quantity, date,
+                                         current_user.get_id(),food_id)
+            added = True
+            print("added")
+
+
+        if added == False and made == False :
+            diary = Diary.Diary(food_product.get_name(), food_product.get_img(),food_product.get_measure(), food_product.get_calories(),
+                                         food_product.get_carbs(),
+                                         food_product.get_fats(), food_product.get_protein(),
+                                         food_product.get_sodium(), food_product.get_sugar(), quantity, date,
+                                         current_user.get_id(),food_id)
+            added = True
+            print("added")
+
+
+
+
+
+
+
+        # user_id_list = []
+        # product_list = {}
+        # diary_values = []
+        #
+        # for i in diary_dict.values():  # {1:testerbanana
+        #     try:
+        #         product_list[i.get_user_id()].append(i.get_food_id())
+        #     except:
+        #         product_list[i.get_user_id()] = [i.get_food_id()]
+        #
+        #     user_id_list.append(i.get_user_id())
+        #     diary_values.append(i)
+        #     print(product_list)
+        #
+        # if current_user.get_id() not in user_id_list:
+        #     diary = Diary.Diary(food_product.get_name(), food_product.get_img(),food_product.get_measure(), food_product.get_calories(),
+        #                         food_product.get_carbs(),
+        #                         food_product.get_fats(), food_product.get_protein(),
+        #                         food_product.get_sodium(), food_product.get_sugar(), quantity, date,
+        #                         current_user.get_id())
+        #     added = True
+        #
+        # else:
+        #
+        #     print(diary_dict.values())  #
+        #     made = False
+        #     for i in diary_dict.values():  # {1:poop+1 yx poop
+        #         print(f"i.getdate 1 {i.get_date()}")
+        #         if i.get_user_id() == current_user.get_id():
+        #
+        #             if i.get_food_id() in product_list[current_user.get_id()]:
+        #                 print(f"foodname {i.get_name()}")
+        #                 print(f"{i.get_food_id()} = = {product_list[current_user.get_id()]}")
+        #                 if food_product.get_food_id() == i.get_food_id():
+        #                         print(f"i.getdate {i.get_date()}")
+        #                         if i.get_date() == date:
+        #                             i.set_quantity(int(i.get_quantity()) + int(quantity))
+        #                             made = True
+        #                             break
+        #
+        #
+        #
+        #     if made == False:
+        #         if food_product.get_food_id() not in product_list[current_user.get_id()]:
+        #             diary = Diary.Diary(food_product.get_name(), food_product.get_img(),food_product.get_measure(), food_product.get_calories(),
+        #                                 food_product.get_carbs(),
+        #                                 food_product.get_fats(), food_product.get_protein(),
+        #                                 food_product.get_sodium(), food_product.get_sugar(), quantity, date,
+        #                                 current_user.get_id())
+        #             added = True
 
         if added == True:
             for key in diary_dict:  # {1:bronze 6:silver 3: bronze}
@@ -234,8 +316,8 @@ def addDiary(id):
 
         db2['Diary'] = diary_dict
         db2.close()
-        flash(f"{food_product.get_name()} has been added to cart.")
-        return redirect(url_for('shop', id=food_id))
+        flash(f"{food_product.get_name()} has been added to diary.")
+        return redirect(url_for('retrieve_Diary', id=food_id))
 
 
 @app.route('/retrieve_Diary')
@@ -251,11 +333,14 @@ def retrieve_Diary():
     except:
         print("Error in opening storage.db")
     db.close()
-
+    current_date = date.today()
     diary_list = []
     for key in diary_dict:  # {1:object(lucas,1,3),2:object(qwdqdw,3,4)}
+
         diary = diary_dict.get(key)
-        diary_list.append(diary)
+        print(f"diary{diary} {diary.get_date()} {current_date}")
+        if str(diary.get_date()) == str(current_date):
+            diary_list.append(diary)
 
     total = 0
     for object in diary_list:
@@ -263,7 +348,7 @@ def retrieve_Diary():
             subtotal = object.set_subtotal(object.get_calories(), object.get_quantity())
             total = total + float(subtotal)
 
-    return render_template('foodDiary.html', count=len(diary_list), diary_list=diary_list, total_calories=total)
+    return render_template('foodDiary.html', count=len(diary_list), diary_list=diary_list, total_calories=total,current_date=current_date)
 
 
 @app.route('/updateQuantitya/<int:id>', methods=['POST'])
@@ -319,6 +404,7 @@ def filter_diary():
         print("Error in opening storage.db")
     db.close()
 
+
     input_date = request.form['inputDate']
     filtered_diary_list = []
     for key in diary_dict:  # {1:object(lucas,1,3),2:object(qwdqdw,3,4)}
@@ -333,7 +419,23 @@ def filter_diary():
             total = total + float(subtotal)
 
     return render_template('foodDiary.html', count=len(filtered_diary_list), diary_list=filtered_diary_list,
-                           total_calories=total)
+                           total_calories=total,current_date=input_date)
+
+@app.route('/foodPage/<int:id>')
+def foodPage(id):
+    food_dict = {}
+    db = shelve.open('db/Food/food.db', 'r')
+    food_dict = db['Food']
+    db.close()
+
+    food_product = []
+    for key in food_dict:  # {1:object(lucas,3,4), 2:object(edwdq,5,6)
+        if key == id:
+            food = food_dict.get(key)
+            food_product = food
+        else:
+            continue
+    return render_template('foodPage.html', food=food_product)
 
 
 # ACCOUNT MANAGEMENT INNIT

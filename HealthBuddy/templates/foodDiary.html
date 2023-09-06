@@ -4,11 +4,10 @@
 {% block content %}
 <div class="container">
     <form action="/filterDiary" method="post">
-        <input type="date" id="inputDate" name="inputDate" onchange="this.form.submit()">
+        <input type="date" id="inputDate" name="inputDate" value="{{current_date}}" onchange="this.form.submit()">
     </form>
     <br>
     <div class="row">
-
         <table class="table table-sm">
             <thead>
             <th>No.</th>
@@ -22,26 +21,28 @@
             </thead>
             <tbody>
             {% set counter = namespace(value=0) %}
-            {% for diary in filtered_diary_list %}
+            {% for diary in diary_list %}
                 {% if diary.get_user_id() == current_user.get_id() %}
 
             <tr>
                 <form action="{{url_for('update_quantitya', id=diary.get_diary_id())}}" method="POST">
                     {% set counter.value=counter.value+1 %}
                 <td>{{ counter.value }}</td>
-                <td>{{ diary.get__name() }}</td>
-                <td>$ {{diary.get_calories()}} </td>
-                <td>$ {{diary.get_carbs()}} </td>
-                <td>$ {{diary.get_fats()}} </td>
-                <td>$ {{diary.get_protein()}} </td>
-                <td>$ {{diary.get_sodium()}} </td>
-                <td>$ {{diary.get_sugar()}} </td>
+                <td>{{ diary.get_name() }}</td>
+                <td> {{diary.get_calories()}} </td>
+                <td> {{diary.get_carbs()}} </td>
+                <td> {{diary.get_fats()}} </td>
+                <td> {{diary.get_protein()}} </td>
+                <td> {{diary.get_sodium()}} </td>
+                <td> {{diary.get_sugar()}} </td>
+                    <td> {{diary.get_date()}} </td>
+                    <p id="inputDate1"></p>
 
 
                 <td>
 
                     <label for ="">Quantity: </label>
-                    <input type="number" name="quantity" id="" value="{{diary.get_quantity()}}" min="1" max="{{diary.get_quantity()}}" onchange="this.form.submit()">
+                    <input type="number" name="quantity" id="" value="{{diary.get_quantity()}}" min="1" max="999" onchange="this.form.submit()">
 
                 </td>
                 </form>
@@ -65,7 +66,7 @@
 
       <!-- Modal body -->
       <div class="modal-body">
-        Are you sure you want to delete {{cart.get_name()}} ?
+        Are you sure you want to delete {{diary.get_name()}} ?
       </div>
 
       <!-- Modal footer -->
@@ -89,16 +90,16 @@
         </table>
         {% if counter.value>0 %}
         <br>
-        <p>Total Calories : $ {{total_calories}}</p>
+        <p>Total Calories : {{total_calories}}</p>
         <br>
         {% else %}
-        <p>Empty Cart</p>
+        <p>Empty Diary</p>
         {% endif %}
     </div>
 </div>
-<script>
-    document.getElementById("inputDate").valueAsDate = new Date();
-</script>
+<!--<script>-->
+<!--    document.getElementById("inputDate").valueAsDate = new Date();-->
+<!--</script>-->
 
 
 

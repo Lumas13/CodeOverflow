@@ -4,6 +4,7 @@ from models.auth.user import User
 # from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 import time
+from datetime import date
 import calendar
 from PIL import Image
 import secrets
@@ -17,10 +18,12 @@ import plotly
 import plotly.graph_objects as go
 # CUSTOMER SUPPORT STUFF
 from flask import Flask, render_template, request, redirect, url_for, jsonify, flash
-from Forms import CreateFeedbackForm, CreateReportForm
+from Forms import CreateFeedbackForm, CreateReportForm, CreateFoodForm
 import shelve, FeedbackForm, ReportForm
-
-
+# DIARY INNIT
+import Diary
+import Food
+from collections import defaultdict
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'hyenen_kekrb'
 login_manager = LoginManager()
@@ -30,8 +33,409 @@ app.config['UPLOAD_FOLDER'] = '/static/Images/uploads/'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 app.config['SESSION_TYPE'] = 'filesystem'
 
-# test
 
+# test
+# food crud
+@app.route('/createFood', methods=['GET', 'POST'])
+def create_food():
+    create_food_form = CreateFoodForm(request.form)
+    if request.method == 'POST' and create_food_form.validate():
+        req = request.files.to_dict()['img']
+        req.save('./' + app.config['UPLOAD_FOLDER'] + req.filename)
+
+        food_dict = {}
+        db = shelve.open('db/Food/food.db', 'c')
+
+        try:
+            food_dict = db['Food']
+        except:
+            db['Food'] = food_dict
+            print("Error in retrieving Food from food.db.")
+
+        food = Food.Food(create_food_form.name.data,
+                         req.filename, create_food_form.measure.data,
+                         create_food_form.calories.data,
+                         create_food_form.carbs.data, create_food_form.fats.data,
+                         create_food_form.protein.data, create_food_form.sodium.data,
+                         create_food_form.sugar.data
+                         )
+
+        for key in food_dict:  # {1:bronze 6:silver 3: bronze}
+            if key == food.get_food_id():
+                food.set_food_id(int(food.get_food_id()) + 1)
+        food_dict[food.get_food_id()] = food  # 1:bronze 2:silver 3:bronze 4:gold
+
+        db['Food'] = food_dict
+        db.close()
+
+        return redirect(url_for('retrieve_food'))
+    return render_template('createFood.html', form=create_food_form)
+
+
+@app.route('/retrieveFood')
+def retrieve_food():
+    food_dict = {}
+    db = shelve.open('db/Food/food.db', 'c')
+    try:
+        if 'Food' in db:
+            food_dict = db['Food']
+        else:
+            db['Food'] = food_dict
+    except:
+        print("Error in opening food.db")
+    db.close()
+
+    food_list = []
+    for key in food_dict:
+        food = food_dict.get(key)
+        food_list.append(food)
+
+    return render_template('retrieveFood.html', count=len(food_list), food_list=food_list)
+
+
+@app.route('/updateFood/<int:id>/', methods=['GET', 'POST'])
+def update_food(id):
+    update_food_form = CreateFoodForm(request.form)
+    if request.method == 'POST' and update_food_form.validate():
+        food_dict = {}
+        db = shelve.open('db/Food/food.db', 'w')
+        food_dict = db['Food']
+
+        food = food_dict.get(id)
+        food.set_name(update_food_form.name.data)
+        if update_food_form.img.data:
+                    image = Image.open(update_food_form.img.data)
+                    random_hex = secrets.token_hex(8)
+                    random_hex = "static/uploads/" + random_hex + ".jpeg"
+                    image.save(random_hex)
+                    food.set_img(random_hex)
+        food.set_measure(update_food_form.measure.data)
+        food.set_calories(update_food_form.calories.data)
+        food.set_carbs(update_food_form.carbs.data)
+        food.set_fats(update_food_form.fats.data)
+        food.set_protein(update_food_form.protein.data)
+        food.set_sodium(update_food_form.sodium.data)
+        food.set_sugar(update_food_form.sugar.data)
+
+
+
+        db['Food'] = food_dict
+        db.close()
+
+        return redirect(url_for('retrieve_food'))
+    else:
+        food_dict = {}
+        db = shelve.open('db/Food/food.db', 'r')
+        food_dict = db['Food']
+        db.close()
+
+        food = food_dict.get(id)
+        update_food_form.name.data = food.get_name()
+        update_food_form.img.data = food.get_img()
+        update_food_form.measure.data = food.get_measure()
+        update_food_form.calories.data = food.get_calories()
+        update_food_form.carbs.data = food.get_carbs()
+        update_food_form.fats.data = food.get_fats()
+        update_food_form.protein.data = food.get_protein()
+        update_food_form.sugar.data = food.get_sugar()
+
+        return render_template('updateFood.html', form=update_food_form)
+
+
+@app.route('/deleteFood/<int:id>', methods=['POST'])
+def delete_food(id):
+    food_dict = {}
+    db = shelve.open('db/Food/food.db', 'w')
+    food_dict = db['Food']
+
+    food_dict.pop(id)
+
+    db['Food'] = food_dict
+    db.close()
+
+    return redirect(url_for('retrieve_food'))
+
+
+#
+#
+
+
+# FOODDIARY
+
+@app.route('/addDiary/<int:id>', methods=["GET", "POST"])
+def addDiary(id):
+    if request.method == "POST":
+        food_dict = {}
+        db = shelve.open('db/Food/food.db', 'r')
+        food_dict = db['Food']  # {1: object-apple, desc,price  2: object-banana,desc}
+        db.close()
+
+        diary_dict = {}
+        db2 = shelve.open('db/Diary/diary.db', 'c')
+
+        print("added to cart")
+
+        try:
+            diary_dict = db2['Diary']
+        except:
+            print("Error in retieving Diary from diary.db")
+
+        quantity = request.form.get("quantity")
+        food_id = request.form.get("food.get_food_id()")
+        date = request.form.get("date")
+        print(f"date: {date}")
+        food_product = food_dict[int(food_id)]
+        print(food_product)
+        print(diary_dict)
+
+        added = False
+        made = False
+        #new method
+        product_dict = defaultdict(list)
+        for i in diary_dict.values():
+            print(f"i: {i} userid: {i.get_user_id()} current_user: {current_user.get_id()}")
+            if i.get_user_id() == current_user.get_id():
+                if i.get_product_id() in product_dict:
+                    product_dict[int(i.get_product_id())].append(i.get_date())
+                    continue
+                else:
+                    product_dict[int(i.get_product_id())].append(i.get_date())
+
+        print(product_dict)
+        for i in diary_dict.values():
+            print(f"2nd flop i:{i} i.id: {i.get_product_id()} fp.id: {food_product.get_food_id()} i.date: {i.get_date()} t/f {food_product.get_food_id() in product_dict} ")
+            if food_product.get_food_id() in product_dict:
+                    if date in product_dict[food_product.get_food_id()]:
+                        if int(i.get_product_id()) == int(food_product.get_food_id()):
+                            if i.get_date() == date:
+                                i.set_quantity(int(i.get_quantity()) + int(quantity))
+                                print("increase quantity")
+                                made = True
+                                break
+            elif food_product.get_food_id() not in product_dict:
+                    diary = Diary.Diary(food_product.get_name(), food_product.get_img(),food_product.get_measure(), food_product.get_calories(),
+                                             food_product.get_carbs(),
+                                             food_product.get_fats(), food_product.get_protein(),
+                                             food_product.get_sodium(), food_product.get_sugar(), quantity, date,
+                                             current_user.get_id(),food_id)
+                    print("added new")
+                    added = True
+            elif food_product.get_food_id() in product_dict:
+                    if date not in product_dict[food_product.get_food_id()]:
+                        diary = Diary.Diary(food_product.get_name(), food_product.get_img(),food_product.get_measure(), food_product.get_calories(),
+                                             food_product.get_carbs(),
+                                             food_product.get_fats(), food_product.get_protein(),
+                                             food_product.get_sodium(), food_product.get_sugar(), quantity, date,
+                                             current_user.get_id(),food_id)
+                        print("added new")
+                        added = True
+
+        print(diary_dict)
+        if len(diary_dict) == 0:
+            diary = Diary.Diary(food_product.get_name(), food_product.get_img(),food_product.get_measure(), food_product.get_calories(),
+                                         food_product.get_carbs(),
+                                         food_product.get_fats(), food_product.get_protein(),
+                                         food_product.get_sodium(), food_product.get_sugar(), quantity, date,
+                                         current_user.get_id(),food_id)
+            added = True
+            print("added")
+
+
+        if added == False and made == False :
+            diary = Diary.Diary(food_product.get_name(), food_product.get_img(),food_product.get_measure(), food_product.get_calories(),
+                                         food_product.get_carbs(),
+                                         food_product.get_fats(), food_product.get_protein(),
+                                         food_product.get_sodium(), food_product.get_sugar(), quantity, date,
+                                         current_user.get_id(),food_id)
+            added = True
+            print("added")
+
+
+
+
+
+
+
+        # user_id_list = []
+        # product_list = {}
+        # diary_values = []
+        #
+        # for i in diary_dict.values():  # {1:testerbanana
+        #     try:
+        #         product_list[i.get_user_id()].append(i.get_food_id())
+        #     except:
+        #         product_list[i.get_user_id()] = [i.get_food_id()]
+        #
+        #     user_id_list.append(i.get_user_id())
+        #     diary_values.append(i)
+        #     print(product_list)
+        #
+        # if current_user.get_id() not in user_id_list:
+        #     diary = Diary.Diary(food_product.get_name(), food_product.get_img(),food_product.get_measure(), food_product.get_calories(),
+        #                         food_product.get_carbs(),
+        #                         food_product.get_fats(), food_product.get_protein(),
+        #                         food_product.get_sodium(), food_product.get_sugar(), quantity, date,
+        #                         current_user.get_id())
+        #     added = True
+        #
+        # else:
+        #
+        #     print(diary_dict.values())  #
+        #     made = False
+        #     for i in diary_dict.values():  # {1:poop+1 yx poop
+        #         print(f"i.getdate 1 {i.get_date()}")
+        #         if i.get_user_id() == current_user.get_id():
+        #
+        #             if i.get_food_id() in product_list[current_user.get_id()]:
+        #                 print(f"foodname {i.get_name()}")
+        #                 print(f"{i.get_food_id()} = = {product_list[current_user.get_id()]}")
+        #                 if food_product.get_food_id() == i.get_food_id():
+        #                         print(f"i.getdate {i.get_date()}")
+        #                         if i.get_date() == date:
+        #                             i.set_quantity(int(i.get_quantity()) + int(quantity))
+        #                             made = True
+        #                             break
+        #
+        #
+        #
+        #     if made == False:
+        #         if food_product.get_food_id() not in product_list[current_user.get_id()]:
+        #             diary = Diary.Diary(food_product.get_name(), food_product.get_img(),food_product.get_measure(), food_product.get_calories(),
+        #                                 food_product.get_carbs(),
+        #                                 food_product.get_fats(), food_product.get_protein(),
+        #                                 food_product.get_sodium(), food_product.get_sugar(), quantity, date,
+        #                                 current_user.get_id())
+        #             added = True
+
+        if added == True:
+            for key in diary_dict:  # {1:bronze 6:silver 3: bronze}
+                if key == diary.get_diary_id():
+                    diary.set_diary_id(int(diary.get_diary_id()) + 1)
+            diary_dict[diary.get_diary_id()] = diary
+            # 1:bronze 2:silver 3:bronze 4:gold
+
+        db2['Diary'] = diary_dict
+        db2.close()
+        flash(f"{food_product.get_name()} has been added to diary.")
+        return redirect(url_for('retrieve_Diary', id=food_id))
+
+
+@app.route('/retrieve_Diary')
+def retrieve_Diary():
+    diary_dict = {}
+
+    db = shelve.open('db/Diary/diary.db', 'c')
+    try:
+        if 'Diary' in db:
+            diary_dict = db['Diary']
+        else:
+            db['Diary'] = diary_dict
+    except:
+        print("Error in opening storage.db")
+    db.close()
+    current_date = date.today()
+    diary_list = []
+    for key in diary_dict:  # {1:object(lucas,1,3),2:object(qwdqdw,3,4)}
+
+        diary = diary_dict.get(key)
+        print(f"diary{diary} {diary.get_date()} {current_date}")
+        if str(diary.get_date()) == str(current_date):
+            diary_list.append(diary)
+
+    total = 0
+    for object in diary_list:
+        if object.get_user_id() == current_user.get_id():
+            subtotal = object.set_subtotal(object.get_calories(), object.get_quantity())
+            total = total + float(subtotal)
+
+    return render_template('foodDiary.html', count=len(diary_list), diary_list=diary_list, total_calories=total,current_date=current_date)
+
+
+@app.route('/updateQuantitya/<int:id>', methods=['POST'])
+def update_quantitya(id):
+    diary_dict = {}
+
+    db = shelve.open('db/Diary/diary.db', 'w')
+    try:
+        if 'Diary' in db:
+            diary_dict = db['Diary']
+        else:
+            db['Diary'] = diary_dict
+    except:
+        print("Error in opening storage.db")
+        print('hello')
+    if request.method == "POST":
+        quantity = request.form.get('quantity')
+        print(diary_dict.get(id).get_quantity())
+        diary_dict.get(id).set_quantity(quantity)
+        print(quantity)
+        print(diary_dict.get(id).get_quantity())
+
+    db['Diary'] = diary_dict
+    db.close()
+    return redirect(url_for('retrieve_Diary'))
+
+
+@app.route('/deleteDiary/<int:id>', methods=['POST'])
+def delete_diary(id):
+    diary_dict = {}
+    db = shelve.open('db/Diary/diary.db', 'w')
+    diary_dict = db['Diary']
+
+    diary_dict.pop(id)
+
+    db['Diary'] = diary_dict
+    db.close()
+
+    return redirect(url_for('retrieve_Diary'))
+
+
+@app.route('/filterDiary', methods=['POST'])
+def filter_diary():
+    diary_dict = {}
+
+    db = shelve.open('db/Diary/diary.db', 'c')
+    try:
+        if 'Diary' in db:
+            diary_dict = db['Diary']
+        else:
+            db['Diary'] = diary_dict
+    except:
+        print("Error in opening storage.db")
+    db.close()
+
+
+    input_date = request.form['inputDate']
+    filtered_diary_list = []
+    for key in diary_dict:  # {1:object(lucas,1,3),2:object(qwdqdw,3,4)}
+        diary = diary_dict.get(key)
+        if diary.get_date() == input_date:
+            filtered_diary_list.append(diary)
+
+    total = 0
+    for object in filtered_diary_list:
+        if object.get_user_id() == current_user.get_id():
+            subtotal = object.set_subtotal(object.get_calories(), object.get_quantity())
+            total = total + float(subtotal)
+
+    return render_template('foodDiary.html', count=len(filtered_diary_list), diary_list=filtered_diary_list,
+                           total_calories=total,current_date=input_date)
+
+@app.route('/foodPage/<int:id>')
+def foodPage(id):
+    food_dict = {}
+    db = shelve.open('db/Food/food.db', 'r')
+    food_dict = db['Food']
+    db.close()
+
+    food_product = []
+    for key in food_dict:  # {1:object(lucas,3,4), 2:object(edwdq,5,6)
+        if key == id:
+            food = food_dict.get(key)
+            food_product = food
+        else:
+            continue
+    return render_template('foodPage.html', food=food_product)
 
 
 # ACCOUNT MANAGEMENT INNIT
@@ -51,6 +455,7 @@ def load_user(user_id):
 @app.route('/')
 def home():
     return render_template('Home.html')
+
 
 @app.route('/aboutUs')
 def aboutUs():
@@ -376,25 +781,24 @@ def shop():
             for letter in search.upper():
                 search_split.append(letter)
 
-            print(search_split) # B a n a n a
-            print(product_split) # A p p l e #B a n a n a # B r o c o l i
+            print(search_split)  # B a n a n a
+            print(product_split)  # A p p l e #B a n a n a # B r o c o l i
             wordCount = 0
             searchWord = []
             productWord = []
 
             try:
-                    for n,m in zip(search_split,product_split):
-                        wordCount +=1
-                        searchWord.append(n)
-                        productWord.append(m)
+                for n, m in zip(search_split, product_split):
+                    wordCount += 1
+                    searchWord.append(n)
+                    productWord.append(m)
             except:
-                    continue
+                continue
             finally:
-                    if searchWord == productWord:
-                        search_list.append(i)
-                    else:
-                        continue
-
+                if searchWord == productWord:
+                    search_list.append(i)
+                else:
+                    continue
 
             count_search = len(search_list)
     return render_template('shop.html', inventory_list=inventory_list, search_list=search_list,
@@ -585,7 +989,6 @@ def confirm_page():
             point_discount = 0
             print(point_discount)
 
-
         quantity = request.form.get('quantity')
         print(quantity)
         cart_list = []
@@ -618,7 +1021,9 @@ def confirm_page():
         db2.close()
 
     return render_template('confirmationPage.html', count=len(cart_list), cart_list=cart_list, user=user,
-                           total_price=round(total,2), card_list=card_list,point_discount=round(float(point_discount),2),total_price_without_discount=total_price_without_discount,points_left=round(points_left,2))
+                           total_price=round(total, 2), card_list=card_list,
+                           point_discount=round(float(point_discount), 2),
+                           total_price_without_discount=total_price_without_discount, points_left=round(points_left, 2))
 
 
 @app.route("/addCard", methods=["GET", "POST"])
@@ -707,7 +1112,6 @@ def addSales():
                                     cart_product.get_price(), cart_product.get_discount(), cart_product.get_quantity(),
                                     cart_product.get_quantity_bought(), address, current_user.get_id())
 
-
                 for key in sales_dict:  # 1:bronze 6:silver 3: bronze
                     if key == sales.get_sales_id():
                         sales.set_sales_id(int(sales.get_sales_id()) + 1)
@@ -734,19 +1138,17 @@ def addSales():
                 db4['Inventory'] = inventory_dict
                 db4.close()
 
-    points_discounted_per_item = float(point_discount)/total_quantity
+    points_discounted_per_item = float(point_discount) / total_quantity
     current_user_id = current_user.get_id()
     for i in sales_id_list:
         salesProduct = sales_dict.get(i)
         salesProduct.set_point_discount(points_discounted_per_item)
         user_dict.get(current_user_id).setpoints((float(user_dict.get(current_user_id).getpoints()) + float(
-                            salesProduct.set_subtotal(salesProduct.get_price(), salesProduct.get_discount(),
-                                               salesProduct.get_quantity_bought(),salesProduct.get_point_discount()) * 0.2)))
-    user_dict.get(current_user_id).setpoints(round((float(user_dict.get(current_user_id).getpoints())-float(point_discount)),2))
+            salesProduct.set_subtotal(salesProduct.get_price(), salesProduct.get_discount(),
+                                      salesProduct.get_quantity_bought(), salesProduct.get_point_discount()) * 0.2)))
+    user_dict.get(current_user_id).setpoints(
+        round((float(user_dict.get(current_user_id).getpoints()) - float(point_discount)), 2))
     print(f"points:{current_user.getpoints()}")
-
-
-
 
     Cart.Cart.count_id = 0
 
@@ -874,7 +1276,7 @@ def retrieve_inventory():
         else:
             db['Inventory'] = inventory_dict
     except:
-        print("Error in opeing storage.db")
+        print("Error in opening storage.db")
     db.close()
 
     inventory_list = []
@@ -1006,13 +1408,15 @@ def sales_generation():
         total = 0
         if sales.get_product_name() in sales_report_dict:
             total = int(sales_report_dict[str(sales.get_product_name())]) + int(
-                sales.set_subtotal(sales.get_price(), sales.get_discount(), sales.get_quantity_bought(),sales.get_point_discount()))
+                sales.set_subtotal(sales.get_price(), sales.get_discount(), sales.get_quantity_bought(),
+                                   sales.get_point_discount()))
             sales_report_dict[sales.get_product_name()] = total
 
         else:
             sales_report_dict[sales.get_product_name()] = total
             total = int(sales_report_dict[str(sales.get_product_name())]) + int(
-                sales.set_subtotal(sales.get_price(), sales.get_discount(), sales.get_quantity_bought(),sales.get_point_discount()))
+                sales.set_subtotal(sales.get_price(), sales.get_discount(), sales.get_quantity_bought(),
+                                   sales.get_point_discount()))
             sales_report_dict[sales.get_product_name()] = total
 
     for key in sales_report_dict:
@@ -1116,7 +1520,6 @@ def delete_feedback(id):
 @app.route('/createReportForm', methods=['GET', 'POST'])
 @login_required
 def create_report():
-
     create_report_form = CreateReportForm(request.form)
     if request.method == 'POST' and create_report_form.validate():
         req = request.files.to_dict()['report_image']

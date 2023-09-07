@@ -15,15 +15,25 @@ from flask_login import LoginManager
 
 login_manager = LoginManager()
 
+from flask_wtf import FlaskForm
+from wtforms import (
+    FloatField,
+    IntegerField,
+    SelectField,
+    SubmitField,
+    validators,
+    StringField,
+)
+
 
 class BodyDetailsForm(FlaskForm):
-    height = FloatField("Height (in cm)", validators=[DataRequired()])
-    weight = FloatField("Weight (in kg)", validators=[DataRequired()])
-    age = IntegerField("Age", validators=[DataRequired()])
+    height = FloatField("Height (in cm)", validators=[validators.DataRequired()])
+    weight = FloatField("Weight (in kg)", validators=[validators.DataRequired()])
+    age = IntegerField("Age", validators=[validators.DataRequired()])
     gender = SelectField(
         "Gender",
         choices=[("male", "Male"), ("female", "Female")],
-        validators=[DataRequired()],
+        validators=[validators.DataRequired()],
     )
     activity_level = SelectField(
         "Activity Level",
@@ -33,7 +43,16 @@ class BodyDetailsForm(FlaskForm):
             ("Moderately Active", "Moderately Active (3-5 days)"),
             ("Very Active", "Very Active (6-7 days)"),
         ],
-        validators=[DataRequired()],
+        validators=[validators.DataRequired()],
+    )
+    goal = SelectField(
+        "Goal",
+        choices=[
+            ("Lose Weight", "Lose Weight"),
+            ("Gain Weight", "Gain Weight"),
+            ("None", "None"),
+        ],
+        validators=[validators.DataRequired()],
     )
     submit = SubmitField("Submit")
 
@@ -95,6 +114,15 @@ class UpdateProfileForm(FlaskForm):
             ("Very Active", "Very Active (6-7 days)"),
         ],
         render_kw={"class": "form-control"},
+    )
+    goal = SelectField(
+        'Goal',
+        choices=[
+            ('Lose Weight', 'Lose Weight'),
+            ('Gain Weight', 'Gain Weight'),
+            ('None', 'None'),
+        ],
+        render_kw={"class": "form-control"}
     )
     submit = SubmitField("Save Changes")
 

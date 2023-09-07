@@ -25,6 +25,7 @@ class User(UserMixin):
         self.__gender = ''
         self.__rec_cal = 0
         self.__activity_level = ''
+        self.__goal = ''
 
     # Mutator Methods
     def getusername(self):
@@ -144,8 +145,14 @@ class User(UserMixin):
     def setcredit_cvv(self, cvv):
         self.__credit_cvv = cvv
 
-    def setcredit_date(self, date):
-        self.__credit_date = date
+    def setcredit_date(self, credit_date):
+        self.__credit_date = credit_date
 
     def setpoints(self,points):
         self.__points = points
+
+    def get_goal(self):
+        return self.__goal
+    def set_goal(self, goal):
+        self.__goal = goal
+

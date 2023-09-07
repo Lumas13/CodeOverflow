@@ -476,7 +476,8 @@ def logHome():
     age = current_user.get_age()
     gender = current_user.get_gender()
     activity_level = current_user.get_activity_level()
-    print(weight)
+    goal = current_user.get_goal()  # Assuming you have a method to get the user's goal
+
     # Calculate BMR based on gender
     if gender == "Male":
         bmr = 10 * weight + 6.25 * height - 5 * age + 5
@@ -498,6 +499,12 @@ def logHome():
     else:
         rec_cal = 0
 
+    # Adjust rec_cal based on the user's goal
+    if goal == "Lose Weight":
+        rec_cal -= 300
+    elif goal == "Gain Weight":
+        rec_cal += 300
+
     # Update the user's rec_cal attribute
     current_user.set_rec_cal(rec_cal)
 
@@ -515,6 +522,7 @@ def inputBody():
         session["height"] = body_details_form.height.data
         session["gender"] = body_details_form.gender.data
         session["activity_level"] = body_details_form.activity_level.data
+        session['goal'] = body_details_form.data
 
         # Redirect to the signup page
         return redirect(url_for("signup"))
@@ -544,6 +552,7 @@ def signup():
         age = session.get("age")
         gender = session.get("gender")
         activity = session.get("activity_level")
+        goal = session.get("goal")
 
         try:
             db = shelve.open("db/customer/users")
@@ -587,6 +596,7 @@ def signup():
                 user.set_age(age)
                 user.set_gender(gender)
                 user.set_activity_level(activity)
+                user.set_goal(goal)
                 user_dict[id] = user
                 db["customer"] = user_dict
                 db.close()
@@ -692,6 +702,7 @@ def update():
                 users.set_age(update_form.age.data)
                 users.set_gender(update_form.gender.data)
                 users.set_activity_level(update_form.activity_level.data)
+                users.set_goal(update_form.goal.data)
                 print(update_form.profile_picture.data)
                 # Upload user profile picture
                 if update_form.profile_picture.data:
@@ -723,6 +734,7 @@ def update():
         update_form.age.data = current_user.get_age()
         update_form.gender.data = current_user.get_gender()
         update_form.activity_level.data = current_user.get_activity_level()
+        update_form.goal.data = current_user.get_goal()
     return render_template("updateprofile.html", form=update_form, card_list=card_list)
 
 

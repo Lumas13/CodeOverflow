@@ -293,7 +293,37 @@ def retrieve_Diary():
             subtotal = object.set_subtotal(object.get_calories(), object.get_quantity())
             total = total + float(subtotal)
 
-    return render_template('foodDiary.html', count=len(diary_list), diary_list=diary_list, total_calories=total,current_date=current_date)
+    weight = current_user.get_weight()
+    height = current_user.get_height()
+    age = current_user.get_age()
+    gender = current_user.get_gender()
+    activity_level = current_user.get_activity_level()
+    print(weight)
+    # Calculate BMR based on gender
+    if gender == "Male":
+        bmr = 10 * weight + 6.25 * height - 5 * age + 5
+    elif gender == "Female":
+        bmr = 10 * weight + 6.25 * height - 5 * age - 161
+    else:
+        bmr = 0
+
+    activity_factors = {
+        "Sedentary": 1.2,
+        "Lightly Active": 1.375,
+        "Moderately Active": 1.55,
+        "Very Active": 1.725,
+    }
+
+    # Calculate daily calorie intake
+    if activity_level in activity_factors:
+        rec_cal = bmr * activity_factors[activity_level]
+    else:
+        rec_cal = 0
+
+    # Update the user's rec_cal attribute
+    current_user.set_rec_cal(rec_cal)
+
+    return render_template('foodDiary.html', count=len(diary_list), diary_list=diary_list, total_calories=total,current_date=current_date,rec_cal=rec_cal)
 
 
 @app.route('/updateQuantitya/<int:id>', methods=['POST'])
@@ -363,8 +393,38 @@ def filter_diary():
             subtotal = object.set_subtotal(object.get_calories(), object.get_quantity())
             total = total + float(subtotal)
 
+    weight = current_user.get_weight()
+    height = current_user.get_height()
+    age = current_user.get_age()
+    gender = current_user.get_gender()
+    activity_level = current_user.get_activity_level()
+    print(weight)
+    # Calculate BMR based on gender
+    if gender == "Male":
+        bmr = 10 * weight + 6.25 * height - 5 * age + 5
+    elif gender == "Female":
+        bmr = 10 * weight + 6.25 * height - 5 * age - 161
+    else:
+        bmr = 0
+
+    activity_factors = {
+        "Sedentary": 1.2,
+        "Lightly Active": 1.375,
+        "Moderately Active": 1.55,
+        "Very Active": 1.725,
+    }
+
+    # Calculate daily calorie intake
+    if activity_level in activity_factors:
+        rec_cal = bmr * activity_factors[activity_level]
+    else:
+        rec_cal = 0
+
+    # Update the user's rec_cal attribute
+    current_user.set_rec_cal(rec_cal)
+
     return render_template('foodDiary.html', count=len(filtered_diary_list), diary_list=filtered_diary_list,
-                           total_calories=total,current_date=input_date)
+                           total_calories=total,current_date=input_date,rec_cal=rec_cal)
 
 @app.route('/foodPage/<int:id>')
 def foodPage(id):

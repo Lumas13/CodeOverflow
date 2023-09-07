@@ -2,10 +2,18 @@
 {% block title %}Library Loan System - Retrieve Inventory{% endblock %}
 
 {% block content %}
+
 <div class="container">
+    <div class="calorie-box">
+    <h2>Daily Recommended Calorie Intake</h2>
+    <p>{{ current_user.get_rec_cal() }} Calories</p>
+    </div>
+
     <form action="/filterDiary" method="post">
         <input type="date" id="inputDate" name="inputDate" value="{{current_date}}" onchange="this.form.submit()">
     </form>
+    <br>
+    <a class="btn btn-primary" href="/retrieveFood" role="button">Add Food Entry</a>
     <br>
     <div class="row">
         <table class="table table-sm">
@@ -18,6 +26,9 @@
             <th>Protein</th>
             <th>Sodium</th>
             <th>Sugar</th>
+            <th>Date Consumed</th>
+            <th>Servings</th>
+            <th> </th>
             </thead>
             <tbody>
             {% set counter = namespace(value=0) %}
@@ -90,7 +101,8 @@
         </table>
         {% if counter.value>0 %}
         <br>
-        <p>Total Calories : {{total_calories}}</p>
+        <p>Total Calories Consumed : {{total_calories}} / {{rec_cal}}</p>
+        <p>Remaining Calories : {{rec_cal - total_calories}}</p>
         <br>
         {% else %}
         <p>Empty Diary</p>

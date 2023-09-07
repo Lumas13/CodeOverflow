@@ -1,4 +1,3 @@
-import Cart
 
 class Sales():
     count_id = 0

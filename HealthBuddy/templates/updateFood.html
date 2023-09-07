@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Library Loan System - Update User{% endblock %}
+
+{% block content %}
+{% from "includes/_formHelper.html" import render_field %}
+
+<h1 class="display-4">Update Food</h1>
+
+<form method="POST" action="">
+  <div class="form-group">
+      {{ render_field(form.name, class="form-control") }}
+  </div>
+  <div class="form-group">
+    {{ render_field(form.img, class="form-control") }}
+  </div>
+  <div class="form-group">
+    {{ render_field(form.measure, class="form-control") }}
+  </div>
+  <div class="form-group">
+     {{ render_field(form.calories, class="form-control") }}
+  </div>
+  <div class="form-group">
+    {{ render_field(form.carbs, class="form-control") }}
+  </div>
+  <div class="form-group">
+    {{ render_field(form.fats, class="form-control") }}
+  </div>
+  <div class="form-group">
+     {{ render_field(form.protein, class="form-control") }}
+  </div>
+  <div class="form-group">
+    {{ render_field(form.sodium, class="form-control") }}
+  </div>
+  <div class="form-group">
+    {{ render_field(form.sugar, class="form-control") }}
+  </div>
+  <input type="submit" value="Submit" class="btn btn-primary"/>
+</form>
+{% endblock %}
+

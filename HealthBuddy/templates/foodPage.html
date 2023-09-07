@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Library Loan System - Product Page{% endblock %}
+
+{% block content %}
+<style>
+    img{
+    object-fit :contain;
+    }
+    #image {
+    background:white;
+    }
+</style>
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6" id="image">
+            <img class="bd-placeholder-img card-img-top" width="100%" height="225" src="./static/Images/uploads/{{ food.get_img() }}" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/></img>
+        </div>
+        <div class="col-md-6">
+            <h4> Food Name - {{ food.get_name() }}</h4>
+            <hr>
+            <p> Calories: {{ food.get_calories()}} </p>
+            <p> Carbs: {{ food.get_carbs()}} </p>
+            <p> Fats: {{ food.get_fats()}} </p>
+            <p> Protein: {{ food.get_protein()}} </p>
+            <p> Sodium: {{ food.get_sodium()}} </p>
+            <p> Sugar: {{ food.get_sugar()}} </p>
+
+
+
+            <form action="{{url_for('addDiary', id=food.get_food_id())}}" method="POST">
+                <label for="">On Date: </label>
+                <input type="date" name="date" id="date" value="">
+
+                <label for ="">Quantity: </label>
+                <input type="number" name="quantity" id="" value="1" min="1" max="999">
+                <br>
+                <input type="hidden" name="food.get_food_id()" value="{{food.get_food_id()}}">
+                <button type="sumbit" class="btn btn-sm btn-warning"> Add into Diary</button>
+            </form>
+
+
+
+        </div>
+
+    </div>
+</div>
+<script>
+    document.getElementById("date").valueAsDate = new Date();
+</script>
+{% endblock %}

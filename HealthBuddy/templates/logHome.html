@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<style>
+  /* Center the content vertically and horizontally */
+  .center-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Adjust to center vertically on the viewport */
+  }
+
+  /* Style for the calorie intake box */
+  .calorie-box {
+    width: 300px;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Add a shadow effect */
+    text-align: center;
+  }
+</style>
+
+<div class="center-content">
+  <div class="calorie-box">
+    <h2>Daily Calorie Intake</h2>
+    <p>{{ current_user.get_rec_cal() }} Calories</p>
+    <!-- You can style this box as needed, and later replace `current_user.rec_cal` with the actual calculated value -->
+  </div>
+</div>
+{% endblock %}

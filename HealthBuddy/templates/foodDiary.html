@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Library Loan System - Retrieve Inventory{% endblock %}
+
+{% block content %}
+<div class="container">
+    <form action="/filterDiary" method="post">
+        <input type="date" id="inputDate" name="inputDate" value="{{current_date}}" onchange="this.form.submit()">
+    </form>
+    <br>
+    <div class="row">
+        <table class="table table-sm">
+            <thead>
+            <th>No.</th>
+            <th>Name</th>
+            <th>Calories</th>
+            <th>Carbs</th>
+            <th>Fats</th>
+            <th>Protein</th>
+            <th>Sodium</th>
+            <th>Sugar</th>
+            </thead>
+            <tbody>
+            {% set counter = namespace(value=0) %}
+            {% for diary in diary_list %}
+                {% if diary.get_user_id() == current_user.get_id() %}
+
+            <tr>
+                <form action="{{url_for('update_quantitya', id=diary.get_diary_id())}}" method="POST">
+                    {% set counter.value=counter.value+1 %}
+                <td>{{ counter.value }}</td>
+                <td>{{ diary.get_name() }}</td>
+                <td> {{diary.get_calories()}} </td>
+                <td> {{diary.get_carbs()}} </td>
+                <td> {{diary.get_fats()}} </td>
+                <td> {{diary.get_protein()}} </td>
+                <td> {{diary.get_sodium()}} </td>
+                <td> {{diary.get_sugar()}} </td>
+                    <td> {{diary.get_date()}} </td>
+                    <p id="inputDate1"></p>
+
+
+                <td>
+
+                    <label for ="">Quantity: </label>
+                    <input type="number" name="quantity" id="" value="{{diary.get_quantity()}}" min="1" max="999" onchange="this.form.submit()">
+
+                </td>
+                </form>
+
+
+                <td><form action="{{url_for('delete_diary', id=diary.get_diary_id())}}" method="POST">
+<button type="button" class="material-icons" data-bs-toggle="modal" data-toggle="tooltip" data-bs-target="#myModal_{{diary.get_diary_id()}}" title="Delete" style="border:0;">
+  &#xE872;
+</button>
+
+<!-- The Modal -->
+<div class="modal" id="myModal_{{diary.get_diary_id()}}">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">Delete Confirmation</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body">
+        Are you sure you want to delete {{diary.get_name()}} ?
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <input type="submit" value="Delete" class="btn btn-danger">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+            </form>
+                </td>
+            </tr>
+                {% else %}
+                {% endif %}
+            {% endfor %}
+
+
+            </tbody>
+        </table>
+        {% if counter.value>0 %}
+        <br>
+        <p>Total Calories : {{total_calories}}</p>
+        <br>
+        {% else %}
+        <p>Empty Diary</p>
+        {% endif %}
+    </div>
+</div>
+<!--<script>-->
+<!--    document.getElementById("inputDate").valueAsDate = new Date();-->
+<!--</script>-->
+
+
+
+
+{% endblock %}
+
+

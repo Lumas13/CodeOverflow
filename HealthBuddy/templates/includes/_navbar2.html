@@ -160,17 +160,16 @@ a.navbar-brand img {
 		{% if current_user.is_authenticated %}
 		<div class="navbar-nav" >
 
+<<<<<<< Updated upstream
 			<a href="/" class="nav-item nav-link active" >Home</a>
+			<a href="/retrieveFood" class="nav-item nav-link">Food Database</a>
+          	<a href="/shop" class="nav-item nav-link">Shop</a>
+=======
+			<a href="/logHome" class="nav-item nav-link active" >Home</a>
           <a href="/shop" class="nav-item nav-link">Shop</a>
+>>>>>>> Stashed changes
 			<a href="/aboutUs" class="nav-item nav-link">About</a>
-			<div class="nav-item dropdown">
-				<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Contact Us</a>
-				<div class="dropdown-menu">
-					<a href="/createReportForm" class="dropdown-item">Report an Issue</a>
-					<a href=/createFeedbackForm class="dropdown-item">Provide Feedback</a>
 
-				</div>
-			</div>
 		</div>
 		<form class="navbar-form form-inline" action="/shop" method="POST">
 			<div class="input-group search-box">
@@ -222,14 +221,6 @@ a.navbar-brand img {
 			<a href="/" class="nav-item nav-link active" >Home</a>
           <a href="/shop" class="nav-item nav-link">Shop</a>
 			<a href="/aboutUs" class="nav-item nav-link">About</a>
-			<div class="nav-item dropdown">
-				<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Contact Us</a>
-				<div class="dropdown-menu">
-					<a href="/createReportForm" class="dropdown-item">Report an Issue</a>
-					<a href=/createFeedbackForm class="dropdown-item">Provide Feedback</a>
-
-				</div>
-			</div>
 		</div>
 		<form class="navbar-form form-inline" action="/shop" method="POST">
 			<div class="input-group search-box">

@@ -24,7 +24,7 @@ body{
 	color: #566787;
 	background: #f5f5f5;
 	font-family:  sans-serif;
-	
+
 }
 .table-responsive {
     margin: 30px 0;
@@ -246,6 +246,22 @@ table.table .avatar {
 }
 </style>
 
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+    var toggleBtn = document.getElementById("toggleBtn");
+
+    // Create a collapse instance, toggles the collapse element on invocation
+    var myCollapse = new bootstrap.Collapse(document.getElementById("myCollapse"));
+
+    // Toggle collapse element on button click
+    toggleBtn.addEventListener("click", function(){
+        myCollapse.toggle();
+    });
+});
+</script>
+
 <div class="container-xl">
 	<div class="table-responsive">
 		<div class="table-wrapper">
@@ -263,40 +279,31 @@ table.table .avatar {
                              <th>Food ID</th>
         <th>Food Name</th>
         <th>Food Image</th>
-        <th>Measure</th>
-        <th>Calories</th>
-        <th>Carbohydrates</th>
-        <th>Fats</th>
-        <th>Protein</th>
-        <th>Sodium</th>
-        <th>Sugar</th>
 						<th>Add to Diary</th>
 						{% if current_user.getrole() == 'admin' %}
         <th>Edit</th>
         <th>Delete</th>
 						{% endif %}
+						<th> </th>
+
 
       </tr>
 </thead>
 				<tbody>
 				{% for food in food_list %}
+
 					<tr>
 						<td>{{ food.get_food_id() }}</td>
 						<td>{{ food.get_name() }}</td>
 <td><img class="bd-placeholder-img card-img-top" width="100%" height="225" src="./static/Images/uploads/{{ food.get_img() }}" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/></img></td>
-        <td>{{ food.get_measure() }}</td>
-        <td>{{ food.get_calories() }}</td>
-         <td>{{ food.get_carbs() }}</td>
-        <td>{{ food.get_fats() }}</td>
-        <td>{{ food.get_protein() }}</td>
-        <td>{{ food.get_sodium() }}</td>
-        <td>{{ food.get_sugar() }}</td>
+
 <td><a href="/foodPage/{{food.get_food_id()}}" class="btn" ><i class="material-icons" data-toggle="tooltip"  title="Add to Diary">&#xe145;</i></a></td>
 {% if current_user.getrole() == 'admin' %}
 <td><a href="/updateFood/{{food.get_food_id()}}" class="btn"><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a></td>
 <td><a href="#deleteEmployeeModal" class="delete" data-toggle="modal"><i class="material-icons" data-bs-toggle="modal" data-bs-target="#myModal_{{food.get_food_id()}}" data-toggle="tooltip" title="Delete">&#xE872;</i></a></td>
 {% endif %}
 
+<td><a href="#nutritionModal" class="btn" data-toggle="modal"><i class="material-icons" data-bs-toggle="modal" data-bs-target="#myModal2_{{food.get_food_id()}}" data-toggle="tooltip" title="Nutrition">&#xe5d3;</i></a></td>
 						<!-- Delete Modal HTML -->
 						<div id="myModal_{{food.get_food_id()}}" class="modal fade">
 							<div class="modal-dialog">
@@ -318,7 +325,36 @@ table.table .avatar {
 								</div>
 							</div>
 						</div>
-						</td>
+
+
+						<!-- Delete Modal HTML -->
+						<div id="myModal2_{{food.get_food_id()}}" class="modal fade">
+							<div class="modal-dialog">
+								<div class="modal-content">
+									<form action="{{url_for('delete_food', id=food.get_food_id())}}" method="POST">
+										<div class="modal-header">
+											<h4 class="modal-title">Nutritional Value  <span><h6> per Serving</h6></span>
+											</h4>
+											<button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">&times;</button>
+
+										</div>
+
+										<div class="modal-body">
+											 <p>Measure : {{ food.get_measure() }}</p>
+											<p>Calories : {{ food.get_calories() }}</p>
+											<p>Carbohydrates : {{ food.get_carbs() }}</p>
+											<p>Fats : {{ food.get_fats() }}</p>
+											<p>Proteins : {{ food.get_protein() }}</p>
+											<p>Sodium : {{food.get_sodium() }}</p>
+											<p>Sugar : {{ food.get_sugar() }}</p>
+
+										</div>
+
+									</form>
+								</div>
+							</div>
+						</div>
+
 					</tr>
 			{% endfor %}
 			</tbody>

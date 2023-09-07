@@ -12,19 +12,15 @@ class User(UserMixin):
         self.__last_name = ''
         self.__phone_number = ''
         self.__address = ''
-        self.__credit_number = ''
-        self.__credit_cvv = ''
-        self.__credit_date = ''
         self.__profile_picture = ''
-        self.__points = 0
 
-        self.__goal = ''
         self.__weight = 0
         self.__age = 0
         self.__height = 0
         self.__gender = ''
         self.__rec_cal = 0
         self.__activity_level = ''
+
     # Mutator Methods
     def getusername(self):
         return self.__username
@@ -53,20 +49,8 @@ class User(UserMixin):
     def getaddress(self):
         return self.__address
 
-    def getcredit_number(self):
-        return self.__credit_number
-
-    def getcredit_cvv(self):
-        return self.__credit_cvv
-
-    def getcredit_date(self):
-        return self.__credit_date
-
     def getprofile_picture(self):
         return self.__profile_picture
-
-    def getpoints(self):
-        return self.__points
 
     # Accessor Methods
     def setusername(self, username):
@@ -96,26 +80,8 @@ class User(UserMixin):
     def setaddress(self, address):
         self.__address = address
 
-    def setcredit_number(self, credit_number):
-        self.__credit_number = credit_number
-
-    def setcredit_cvv(self, cvv):
-        self.__credit_cvv = cvv
-
-    def setcredit_date(self, date):
-        self.__credit_date = date
-
     def setprofile_picture(self, profile_picture):
         self.__profile_picture = profile_picture
-
-    def setpoints(self, points):
-        self.__points = points
-
-    def get_selected_goal(self):
-        return self.__selected_goal
-
-    def set_selected_goal(self, selected_goal):
-        self.__selected_goal = selected_goal
 
     def get_weight(self):
         return self.__weight

@@ -17,6 +17,7 @@ class User(UserMixin):
         self.__credit_cvv = ''
         self.__credit_date = ''
         self.__profile_picture = ''
+        self.__points =  0
 
         self.__weight = 0
         self.__age = 0
@@ -64,6 +65,11 @@ class User(UserMixin):
 
     def getcredit_date(self):
         return self.__credit_date
+
+    def getpoints(self):
+        return self.__points
+
+
 
     # Accessor Methods
     def setusername(self, username):
@@ -140,3 +146,6 @@ class User(UserMixin):
 
     def setcredit_date(self, date):
         self.__credit_date = date
+
+    def setpoints(self,points):
+        self.__points = points

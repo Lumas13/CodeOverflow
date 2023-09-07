@@ -13,6 +13,10 @@ class User(UserMixin):
         self.__phone_number = ''
         self.__address = ''
         self.__profile_picture = ''
+        self.__credit_number = ''
+        self.__credit_cvv = ''
+        self.__credit_date = ''
+        self.__profile_picture = ''
 
         self.__weight = 0
         self.__age = 0
@@ -51,6 +55,15 @@ class User(UserMixin):
 
     def getprofile_picture(self):
         return self.__profile_picture
+
+    def getcredit_number(self):
+        return self.__credit_number
+
+    def getcredit_cvv(self):
+        return self.__credit_cvv
+
+    def getcredit_date(self):
+        return self.__credit_date
 
     # Accessor Methods
     def setusername(self, username):
@@ -118,5 +131,14 @@ class User(UserMixin):
 
     def set_activity_level(self, activity_level):
         self.__activity_level = activity_level
+
+    def setcredit_number(self, credit_number):
+        self.__credit_number = credit_number
+
+    def setcredit_cvv(self, cvv):
+        self.__credit_cvv = cvv
+
+    def setcredit_date(self, date):
+        self.__credit_date = date
 
 

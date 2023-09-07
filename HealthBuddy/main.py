@@ -1,9 +1,9 @@
 #FLASK
-from flask import Flask, render_template, request, redirect, url_for, jsonify, flash
+from flask import Flask, render_template, request, redirect, url_for, jsonify, flash, session
 import shelve
 
 # ACCOUNT MANAGEMENT IMPORT
-from models.auth.authforms import SignupForm, LoginForm, UpdateProfileForm, ChangePasswordForm, CreateCreditCardForm
+from models.auth.authforms import SignupForm, LoginForm, UpdateProfileForm, ChangePasswordForm, CreateCreditCardForm, BodyDetailsForm
 from models.auth.user import User
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 import time
@@ -408,6 +408,59 @@ def home():
 def aboutUs():
     return render_template('aboutus.html')
 
+@app.route("/logHome")
+def logHome():
+    # Get user information
+    weight = current_user.get_weight()
+    height = current_user.get_height()
+    age = current_user.get_age()
+    gender = current_user.get_gender()
+    activity_level = current_user.get_activity_level()
+    print(weight)
+    # Calculate BMR based on gender
+    if gender == "Male":
+        bmr = 10 * weight + 6.25 * height - 5 * age + 5
+    elif gender == "Female":
+        bmr = 10 * weight + 6.25 * height - 5 * age - 161
+    else:
+        bmr = 0
+
+    activity_factors = {
+        "Sedentary": 1.2,
+        "Lightly Active": 1.375,
+        "Moderately Active": 1.55,
+        "Very Active": 1.725,
+    }
+
+    # Calculate daily calorie intake
+    if activity_level in activity_factors:
+        rec_cal = bmr * activity_factors[activity_level]
+    else:
+        rec_cal = 0
+
+    # Update the user's rec_cal attribute
+    current_user.set_rec_cal(rec_cal)
+
+    return render_template("logHome.html", rec_cal=rec_cal)
+
+
+@app.route("/inputBody", methods=["GET", "POST"])
+def inputBody():
+    body_details_form = BodyDetailsForm()  # Create an instance of BodyDetailsForm
+
+    if request.method == "POST":
+        # Retrieve body details data from the form and store it in the session
+        session["weight"] = body_details_form.weight.data
+        session["age"] = body_details_form.age.data
+        session["height"] = body_details_form.height.data
+        session["gender"] = body_details_form.gender.data
+        session["activity_level"] = body_details_form.activity_level.data
+
+        # Redirect to the signup page
+        return redirect(url_for("signup"))
+
+    return render_template("inputBody.html", body_details_form=body_details_form)
+
 
 # Gets the user data from the signup form and enter it into the user_dict database
 @app.route("/Signup", methods=["GET", "POST"])
@@ -422,22 +475,31 @@ def signup():
         current_gmt = time.gmtime()
         id = calendar.timegm(current_gmt)
         user_dict = {}
-        error = 'none'
-        try:
-            db = shelve.open('db/customer/users')
-            if 'customer' in db:
-                user_dict = db['customer']
-            else:
-                db['customer'] = user_dict
+        error = "none"
 
-            substring = '@staff'
+        # Retrieve the body details data from the session
+
+        height = session.get("height")
+        weight = session.get("weight")
+        age = session.get("age")
+        gender = session.get("gender")
+        activity = session.get("activity_level")
+
+        try:
+            db = shelve.open("db/customer/users")
+            if "customer" in db:
+                user_dict = db["customer"]
+            else:
+                db["customer"] = user_dict
+
+            substring = "@staff"
             if substring in email:
                 user = User(username, email, password, id)
-                user.setrole('admin')
+                user.setrole("admin")
                 user_dict[id] = user
-                db['customer'] = user_dict
+                db["customer"] = user_dict
                 db.close()
-                return redirect(url_for('login'))
+                return redirect(url_for("login"))
 
             # Check if username/email has been taken
             username_list = []
@@ -447,51 +509,54 @@ def signup():
                 email_list.append(objects.getemail())
             if username in username_list and email in email_list:
                 error = "Both username and email are already taken"
-                return render_template('Signup.html', form=signup_form, error=error)
+                return render_template("Signup.html", form=signup_form, error=error)
             elif email in email_list:
                 error = "Email is already taken"
-                return render_template('Signup.html', form=signup_form, error=error)
+                return render_template("Signup.html", form=signup_form, error=error)
             elif username in username_list:
                 error = "Username is already taken"
-                return render_template('Signup.html', form=signup_form, error=error)
+                return render_template("Signup.html", form=signup_form, error=error)
             elif password != password2:
-                error = 'Password does not match'
-                return render_template('Signup.html', form=signup_form, error=error)
+                error = "Password does not match"
+                return render_template("Signup.html", form=signup_form, error=error)
             else:
                 user = User(username, email, password, id)
-                user.setrole('customer')
+                user.setrole("customer")
+                user.set_height(height)
+                user.set_weight(weight)
+                user.set_age(age)
+                user.set_gender(gender)
+                user.set_activity_level(activity)
                 user_dict[id] = user
-                db['customer'] = user_dict
+                db["customer"] = user_dict
                 db.close()
-                return redirect(url_for('login'))
+                return redirect(url_for("login"))
         except IOError:
             print("IO Error")
         except Exception as ex:
             print(f"Unknown error occurred as {ex}")
-    return render_template('Signup.html', form=signup_form)
+    return render_template("Signup.html", form=signup_form)
 
 
-@app.route('/Login', methods=['GET', 'POST'])
+@app.route("/Login", methods=["GET", "POST"])
 def login():
     login_form = LoginForm()
-    if request.method == 'POST':
-        # Retrieve login data from login form
+    if request.method == "POST":
         username = login_form.username.data
         password = login_form.password.data
 
-        db = shelve.open('db/customer/users', "c")
+        db = shelve.open("db/customer/users", "c")
         user_dict = {}
         try:
-            if 'customer' in db:
-                user_dict = db['customer']
+            if "customer" in db:
+                user_dict = db["customer"]
             else:
-                db['customer'] = user_dict
+                db["customer"] = user_dict
         except Exception as ex:
             print(f"Unknown error occurred as {ex}")
 
-        # Checks if current is admin role, if yes check if username is in db, if yes check if username matches password
         for user in user_dict.values():
-            if user.getrole() == 'admin':
+            if user.getrole() == "admin":
                 if user.getusername() == username:
                     if user.getpassword() == password:
                         login_user(user)
@@ -500,18 +565,17 @@ def login():
                     print(user.getusername(), " has logged in")
                     return redirect(url_for("update"))
 
-        # Checks if current is customer role, if yes check if username is in db, if yes check if username matches password
         for user in user_dict.values():
-            if user.getrole() == 'customer':
+            if user.getrole() == "customer":
                 if user.getusername() == username:
                     if user.getpassword() == password:
                         login_user(user)
                         flash(f"{user.getusername()} has logged in successfully")
 
                     print(user.getusername(), " has logged in")
-                    return redirect(url_for("home"))
+                    return redirect(url_for("logHome"))
 
-    return render_template('Login.html', form=login_form)
+    return render_template("Login.html", form=login_form)
 
 
 # Log-outs the user
@@ -526,18 +590,18 @@ def logout():
         print(f"Unknown error occurred as {ex}")
 
 
-@app.route('/update', methods=['GET', 'POST'])
+@app.route("/update", methods=["GET", "POST"])
 @login_required
 def update():
     update_form = UpdateProfileForm()
-    db2 = shelve.open('db/Card/card', 'c')
+    db2 = shelve.open("db/Card/card", "c")
     card_dict = {}
 
     try:
-        if 'Card' in db2:
-            card_dict = db2['Card']
+        if "Card" in db2:
+            card_dict = db2["Card"]
         else:
-            db2['Card'] = card_dict
+            db2["Card"] = card_dict
     except:
         print("Error in opening storage.db")
     db2.close()
@@ -548,9 +612,9 @@ def update():
             card_list.append(card)
 
     if request.method == "POST":
-        db = shelve.open('db/customer/users')
+        db = shelve.open("db/customer/users")
         user_dict = {}
-        user_dict = db['customer']
+        user_dict = db["customer"]
 
         for users in user_dict.values():
             if users.get_id() == current_user.get_id():
@@ -563,6 +627,11 @@ def update():
                 users.setcredit_number(update_form.credit_number.data)
                 users.setcredit_cvv(update_form.credit_cvv.data)
                 users.setcredit_date(update_form.credit_date.data)
+                users.set_weight(update_form.weight.data)
+                users.set_height(update_form.height.data)
+                users.set_age(update_form.age.data)
+                users.set_gender(update_form.gender.data)
+                users.set_activity_level(update_form.activity_level.data)
                 print(update_form.profile_picture.data)
                 # Upload user profile picture
                 if update_form.profile_picture.data:
@@ -572,12 +641,12 @@ def update():
                     image.save(random_hex)
                     users.setprofile_picture(random_hex)
 
-                db['customer'] = user_dict
+                db["customer"] = user_dict
                 db.close()
                 flash("Account updated.")
                 return redirect(url_for("update"))
             else:
-                print('error')
+                print("error")
     else:
         update_form.username.data = current_user.getusername()
         update_form.email.data = current_user.getemail()
@@ -589,7 +658,12 @@ def update():
         update_form.credit_cvv.data = current_user.getcredit_cvv()
         update_form.credit_date.data = current_user.getcredit_date()
         update_form.profile_picture.data = current_user.getprofile_picture()
-    return render_template('updateprofile.html', form=update_form, card_list=card_list)
+        update_form.weight.data = current_user.get_weight()
+        update_form.height.data = current_user.get_height()
+        update_form.age.data = current_user.get_age()
+        update_form.gender.data = current_user.get_gender()
+        update_form.activity_level.data = current_user.get_activity_level()
+    return render_template("updateprofile.html", form=update_form, card_list=card_list)
 
 
 @app.route('/editPassword', methods=['GET', 'POST'])

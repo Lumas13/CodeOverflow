@@ -14,7 +14,7 @@
 <script src="https://kit.fontawesome.com/ad55531dcb.js" crossorigin="anonymous"></script>
 <style>
 body {
-	background: #eeeeee;
+	background: #ffffff;
     font-family: 'Varela Round', sans-serif;
 
 }
@@ -26,7 +26,7 @@ body {
 }
 .navbar {
 
-	background: #c2312b;
+	background: #1060d3;
 	padding-left: 16px;
 	padding-right: 16px;
 	height: 100px;
@@ -42,8 +42,8 @@ body {
 	margin-right: 10px;
 }
 a.navbar-brand img {
-  height: 100px;
-  width: 100px;
+  height: 80px;
+  width: 80px;
 }
 
 .navbar .navbar-brand {
@@ -153,16 +153,21 @@ a.navbar-brand img {
 </head>
 <body>
 <nav class="navbar navbar-expand-xl navbar-dark">
-	<a class="navbar-brand" href="/"><img src="/static/Images/KoryoMart2.png"/></a>
+
 
 	<!-- Collection of nav links, forms, and other content for toggling -->
 	<div id="navbarCollapse" class="collapse navbar-collapse justify-content-start">
+
 		{% if current_user.is_authenticated %}
+		<a class="navbar-brand" href="/logHome"><img src="/static/Images/HealthBuddy.jpg"/></a>
 		<div class="navbar-nav" >
 
-			<a href="/" class="nav-item nav-link active" >Home</a>
+
+			<a href="/logHome" class="nav-item nav-link active" >Home</a>
 			<a href="/retrieveFood" class="nav-item nav-link">Food Database</a>
           	<a href="/shop" class="nav-item nav-link">Shop</a>
+
+
 			<a href="/aboutUs" class="nav-item nav-link">About</a>
 
 		</div>
@@ -184,23 +189,6 @@ a.navbar-brand img {
 				{% endif %}
 				<div class="dropdown-menu">
 					<a href="/update" class="dropdown-item"><i class="fa fa-user-o"></i> Profile</a></a>
-<!--					{% if current_user.getrole() == "admin" %}-->
-<!--						<li><a class="dropdown-item" href="/createInventory">Add Item</a></li>-->
-<!--						<li><a class="dropdown-item" href="/retrieveInventory">Item Stock</a></li>-->
-<!--						<li><a class="dropdown-item" href="/retrieveSales">Retrieve Sales</a></li>-->
-<!--						<li><a class="dropdown-item" href="/createReportForm">Report an Issue</a></li>-->
-<!--						<li><a class="dropdown-item" href="/createFeedbackForm">Provide Feedback</a></li>-->
-<!--						  <li><hr class="dropdown-divider"></li>-->
-<!--						<li><a class="dropdown-item" href="/retrieveFeedbackForm">Feedback Data</a></li>-->
-<!--						<li><a class="dropdown-item" href="/retrieveReportForm">Report Data</a></li>-->
-<!--						  <li><a class="dropdown-item" href="/customerchatlogs">Customer Chat Logs</a></li>-->
-<!--						  <li><hr class="dropdown-divider"></li>-->
-<!--						<li><a class="dropdown-item" href="/InventoryGeneration">Inventory Graph</a></li>-->
-<!--						<li><a class="dropdown-item" href="/SalesGeneration">Sales Graph</a></li>-->
-<!--						<li><hr class="dropdown-divider"></li>-->
-<!--						<li><a class="dropdown-item" href="#">Something else here</a></li>-->
-<!--					</ul>-->
-<!--					{% endif %}-->
 					<div class="dropdown-divider"></div>
 					<a href="/Logout" class="dropdown-item"><i class="material-icons">&#xE8AC;</i> Logout</a></a>
 
@@ -211,22 +199,14 @@ a.navbar-brand img {
 
 
 		{% if current_user.is_anonymous %}
+		<a class="navbar-brand" href="/"><img src="/static/Images/HealthBuddy.jpg"/></a>
 		<div class="navbar-nav" >
 
 			<a href="/" class="nav-item nav-link active" >Home</a>
-          <a href="/shop" class="nav-item nav-link">Shop</a>
 			<a href="/aboutUs" class="nav-item nav-link">About</a>
 		</div>
-		<form class="navbar-form form-inline" action="/shop" method="POST">
-			<div class="input-group search-box">
-				<input type="text" id="search" name="search" class="form-control" placeholder="Search Product" onchange="this.form.submit()">
-				<span class="input-group-addon"><i class="material-icons">&#xE8B6;</i></span>
-			</div>
-		</form>
 		<div class="navbar-nav ml-auto">
-			<a href="/retrieveCart" class="nav-item nav-link notifications"><i class="fa-solid fa-cart-shopping"></i><span class="badge"></span></a>
 			<a href="/Login" class="nav-item nav-link">Log In</a>
-			<a href="/Signup" class="nav-item nav-link">Sign Up</a>
 		</div>
 		{% endif %}
 	</div>

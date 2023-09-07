@@ -1,35 +1,32 @@
-{% extends "base.html" %}
-{% block title %}Profile{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% block title %}Profile{% endblock %} {% block content %}
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css">
 <script src="https://kit.fontawesome.com/95d0587cf4.js" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <style>
-* {
-margin: 0;
-padding: 0;
--webkit-box-sizing: border-box;
--moz-box-sizing: border-box;
-box-sizing: border-box
-}
+  * {
+    margin: 0;
+    padding: 0;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box
+  }
 
-body {
+  body {
     font-family: 'Open Sans', Arial, Helvetica, Sans-serif, Verdana, Tahoma
-}
+  }
 
-ul {
+  ul {
     list-style-type: none
-}
+  }
 
-a {
+  a {
     color: #b63b4d;
     text-decoration: none
-}
+  }
 
-.accordion {
+  .accordion {
     width: 100%;
     max-width: 584px;
     margin: 30px -15px 20px;
@@ -37,9 +34,9 @@ a {
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
     border-radius: 5px
-}
+  }
 
-.accordion .link {
+  .accordion .link {
     cursor: pointer;
     display: block;
     padding: 15px 15px 15px 42px;
@@ -51,13 +48,13 @@ a {
     -webkit-transition: all 0.4s ease;
     -o-transition: all 0.4s ease;
     transition: all 0.4s ease
-}
+  }
 
-.accordion li:last-child .link {
+  .accordion li:last-child .link {
     border-bottom: 0
-}
+  }
 
-.accordion li i {
+  .accordion li i {
     position: absolute;
     top: 16px;
     left: 12px;
@@ -66,40 +63,40 @@ a {
     -webkit-transition: all 0.4s ease;
     -o-transition: all 0.4s ease;
     transition: all 0.4s ease
-}
+  }
 
-.accordion li i.fa-chevron-down {
+  .accordion li i.fa-chevron-down {
     right: 12px;
     left: auto;
     font-size: 16px
-}
+  }
 
-.accordion li.open .link {
+  .accordion li.open .link {
     color: #AA00FF
-}
+  }
 
-.accordion li.open i {
+  .accordion li.open i {
     color: #AA00FF
-}
+  }
 
-.accordion li.open i.fa-chevron-down {
+  .accordion li.open i.fa-chevron-down {
     -webkit-transform: rotate(180deg);
     -ms-transform: rotate(180deg);
     -o-transform: rotate(180deg);
     transform: rotate(180deg)
-}
+  }
 
-.submenu {
+  .submenu {
     display: none;
     background: #444359;
     font-size: 14px
-}
+  }
 
-.submenu li {
+  .submenu li {
     border-bottom: 1px solid #4b4a5e
-}
+  }
 
-.submenu a {
+  .submenu a {
     display: block;
     text-decoration: none;
     color: #d9d9d9;
@@ -108,346 +105,360 @@ a {
     -webkit-transition: all 0.25s ease;
     -o-transition: all 0.25s ease;
     transition: all 0.25s ease
-}
+  }
 
-.submenu a:hover {
+  .submenu a:hover {
     background: #b63b4d;
     color: #FFF
-}
+  }
 </style>
 <script>
-$(function() {
-var Accordion = function(el, multiple) {
-this.el = el || {};
-this.multiple = multiple || false;
-
-var links = this.el.find('.link');
-
-links.on('click', {el: this.el, multiple: this.multiple}, this.dropdown)
-}
-
-Accordion.prototype.dropdown = function(e) {
-var $el = e.data.el;
-$this = $(this),
-$next = $this.next();
-
-$next.slideToggle();
-$this.parent().toggleClass('open');
-
-if (!e.data.multiple) {
-$el.find('.submenu').not($next).slideUp().parent().removeClass('open');
-};
-}
-
-var accordion = new Accordion($('#accordion'), false);
-});
-</script>
-{% for message in get_flashed_messages() %}
- <div class="alert alert-success alert-dismissible fade show" role="alert">
+  $(function() {
+    var Accordion = function(el, multiple) {
+      this.el = el || {};
+      this.multiple = multiple || false;
+      var links = this.el.find('.link');
+      links.on('click', {
+        el: this.el,
+        multiple: this.multiple
+      }, this.dropdown)
+    }
+    Accordion.prototype.dropdown = function(e) {
+      var $el = e.data.el;
+      $this = $(this),
+        $next = $this.next();
+      $next.slideToggle();
+      $this.parent().toggleClass('open');
+      if (!e.data.multiple) {
+        $el.find('.submenu').not($next).slideUp().parent().removeClass('open');
+      };
+    }
+    var accordion = new Accordion($('#accordion'), false);
+  });
+</script> {% for message in get_flashed_messages() %} <div class="alert alert-success alert-dismissible fade show" role="alert">
   <strong>{{message}}</strong>
   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
-{% endfor %}
-<form action="/update" method="POST" enctype="multipart/form-data">
-    <section>
-        <div class="container py-5">
-            <div class="row">
-                <div class="col-lg-4">
-                    <div class="card mb-4">
-                        <div class="card-body text-center"> <!--Name and Profile Picture-->
-                            {% if current_user.getprofile_picture() %}
-                            <img src="{{ current_user.getprofile_picture() }}" alt="" class="rounded-circle img-fluid" style="width: 200px; height: 200px">
-                            {% else %}
-                            <img src="./static/Images/profileicon.jpg" alt="" class="rounded-circle img-fluid" style="width: 200px; height: 200px">
-                            {% endif %}
-                            <h5 class="my-3">{{ current_user.getusername() }}</h5>
-                            {% if current_user.getrole() == 'customer' %}
-                                <p class="text-muted mb-1">Customer</p>
-                            {% endif %}
-                            {% if current_user.getrole() == 'admin' %}
-                                <p class="text-muted mb-1">Administrator</p>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="card mb-4 mb-lg-9">
-                        <div class="card-body p-0">
-                            {% if current_user.getrole() == 'admin' %}
-                            <div class="container"> <!--Profile Page navigation-->
-                                <ul id="accordion" class="accordion">
-                                    <li>
-                                        <div class="link"><i class="fa-solid fa-user"></i>Account Management<i class="fa fa-chevron-down"></i></div>
-                                        <ul class="submenu">
-                                            <li><a href="/Management">Manage Accounts</a></li>
-                                            <li><a href="/update">Profile</a></li>
-                                            <li><a href="/editPassword">Change Password</a></li>
-                                        </ul>
-                                    </li>
-                                    <li>
-                                        <div class="link"><i class="fa-solid fa-box"></i></i>Transaction Management<i class="fa fa-chevron-down"></i></div>
-                                        <ul class="submenu">
-                                            <li><a href="/createInventory">Add Inventory</a></li>
-                                            <li><a href="/retrieveInventory">Inventory Stocks </a></li>
-
-                                        </ul>
-                                    </li>
-                                    <li>
-                                        <div class="link"><i class="fa-solid fa-box"></i></i>Food Management<i class="fa fa-chevron-down"></i></div>
-                                        <ul class="submenu">
-                                            <li><a href="/createFood">Add Food</a></li>
-                                            <li><a href="/retrieveFood">Food Database </a></li>
-
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </div>
-                            {% endif %}
-                            {% if current_user.getrole() == 'customer' %}
-                            <div class="container"> <!--Profile Page navigation-->
-                                <ul id="accordion" class="accordion">
-                                    <li>
-                                        <div class="link"><i class="fa-solid fa-user"></i>My Account<i class="fa fa-chevron-down"></i></div>
-                                        <ul class="submenu">
-                                            <li><a href="/update">Profile</a></li>
-                                            <li><a href="/editPassword">Change Password</a></li>
-                                        </ul>
-                                    </li>
-                                    <li>
-                                        <div class="link"><i class="fa-solid fa-cart-shopping"></i>My Food Diary<i class="fa fa-chevron-down"></i></div>
-                                        <ul class="submenu">
-                                            <li><a href="/retrieve_Diary">Food Diary</a></li>
-                                        </ul>
-                                    </li>
-                                    <li>
-                                        <div class="link"><i class="fa-solid fa-cart-shopping"></i>My Purchase<i class="fa fa-chevron-down"></i></div>
-                                        <ul class="submenu">
-                                            <li><a href="/Purchase">Purchase History</a></li>
-                                        </ul>
-                                    </li>
-
-<!--                                    <li>-->
-<!--                                        <div class="link"><i class="fa-solid fa-coins"></i>My Points<i class="fa fa-chevron-down"></i></div>-->
-<!--                                        <ul class="submenu">-->
-<!--                                            <li><a href="/">Points</a></li>-->
-<!--                                        </ul>-->
-<!--                                    </li>-->
-                                </ul>
-                            </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-8">
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <div class="row">
-                                {% if current_user.getrole() == "customer" %}
-                                <div class="col-sm-3">
-                                    {{form.first_name.label(class = 'form-labels')}}
-                                </div>
-                                <div class="col-sm-9">
-                                    {{form.first_name(class = 'form-control')}}
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div class="col-sm-3">
-                                    {{form.last_name.label(class = 'form-labels')}}
-                                </div>
-                                <div class="col-sm-9">
-                                    {{form.last_name(class = 'form-control')}}
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div class="col-sm-3">
-                                    {{form.username.label(class = 'form-labels')}}
-                                </div>
-                                <div class="col-sm-9">
-                                    {{form.username(class = 'form-control')}}
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div class="col-sm-3">
-                                    {{form.email.label(class = 'form-label')}}
-                                </div>
-                                <div class="col-sm-9">
-                                    {{form.email(class = 'form-control')}}
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div class="col-sm-3">
-                                    {{form.phone_number.label(class = 'form-label')}}
-                                </div>
-                                <div class="col-sm-9">
-                                    {{form.phone_number(class = 'form-control')}}
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div class="col-sm-3">
-                                    {{form.address.label(class = 'form-label')}}
-                                </div>
-                                <div class="col-sm-9">
-                                    {{form.address(class = 'form-control')}}
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div class="form-group">
-                              <label for="sel1">Credit Card:</label>
-                              <select class="form-control" id="sel1" >
-                                  {% for i in card_list %}
-                                  <option>POSB/DBS {{i.set_masked_card_no(i.get_card_no())}}
-                                  <option>
-                                  {% endfor %}
-                              </select>
-                                    <a href="/addCard" style="color:blue;float:right;">Add Card?</a>
-                            </div>
-                                </div>
-                            <hr>
-                            <div class="row">
-                            <div class="col-sm-3">
-                                {{form.profile_picture.label(class = 'form-label')}}
-                            </div>
-                            <div class="col-sm-9">
-                                {{form.profile_picture(class = 'form-control')}}
-                            </div>
-                                <br>
-                            </div>
-                                <br>
-                                <hr>
-                                <div class="row">
-                                    <br>
-                                    <p>Points Redeemables Available: {{current_user.getpoints()}}</p>
-                                </div>
-                            
-                            <br>
-                           <div class="mt-5 text-center">
-                               <li style="display:inline-block;">
-                                {{form.submit(class="btn btn-success")}}
-                            </li>
-                            <li style="display:inline-block;">
-<!--                                <a class="btn btn-danger" href="/delete">Delete Account</a>-->
-                                <a href="#deleteEmployeeModal" class="btn btn-danger" class="delete" data-toggle="modal"><i class="material-icons" data-bs-toggle="modal" data-bs-target="#myModal_{{current_user.get_id()}}" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
-                                <div id="myModal_{{current_user.get_id()}}" class="modal fade">
-							<div class="modal-dialog">
-								<div class="modal-content">
-									<form action="{{url_for('delete', id=current_user.get_id())}}" method="POST">
-										<div class="modal-header">
-											<h4 class="modal-title">Delete Employee</h4>
-											<button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">&times;</button>
-										</div>
-										<div class="modal-body">
-											<p>Are you sure you want to delete the account {{current_user.getusername()}}?</p>
-											<p class="text-warning"><small>This action cannot be undone.</small></p>
-										</div>
-										<div class="modal-footer">
-											<input type="button" class="btn btn-default" data-bs-dismiss="modal" value="Cancel">
-											<input type="submit" value="Delete" class="btn btn-danger">
-										</div>
-									</form>
-								</div>
-							</div>
-						</div>
-                            </li>
-                            </div>
-                            {% endif %}
-
-                            {% if current_user.getrole() == "admin" %}
-                                <div class="col-sm-3">
-                                    {{form.first_name.label(class = 'form-labels')}}
-                                </div>
-                                <div class="col-sm-9">
-                                    {{form.first_name(class = 'form-control')}}
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div class="col-sm-3">
-                                    {{form.last_name.label(class = 'form-labels')}}
-                                </div>
-                                <div class="col-sm-9">
-                                    {{form.last_name(class = 'form-control')}}
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div class="col-sm-3">
-                                    {{form.username.label(class = 'form-labels')}}
-                                </div>
-                                <div class="col-sm-9">
-                                    {{form.username(class = 'form-control')}}
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div class="col-sm-3">
-                                    {{form.email.label(class = 'form-label')}}
-                                </div>
-                                <div class="col-sm-9">
-                                    {{form.email(class = 'form-control')}}
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div class="col-sm-3">
-                                    {{form.phone_number.label(class = 'form-label')}}
-                                </div>
-                                <div class="col-sm-9">
-                                    {{form.phone_number(class = 'form-control')}}
-                                </div>
-                            </div>
-                            <hr>
-                        <div class="row">
-                            <div class="col-sm-3">
-                                {{form.profile_picture.label(class = 'form-label')}}
-                            </div>
-                            <div class="col-sm-9">
-                                {{form.profile_picture(class = 'form-control')}}
-                            </div>
-                            </div>
-                            <div class="mt-5 text-center">
-                               <li style="display:inline-block;">
-                                {{form.submit(class="btn btn-success")}}
-                            </li>
-                            <li style="display:inline-block;">
-<!--                                <a class="btn btn-danger" href="/delete">Delete Account</a>-->
-                                <a href="#deleteEmployeeModal" class="btn btn-danger" class="delete" data-toggle="modal"><i class="material-icons" data-bs-toggle="modal" data-bs-target="#myModal_{{current_user.get_id()}}" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
-                                <div id="myModal_{{current_user.get_id()}}" class="modal fade">
-							<div class="modal-dialog">
-								<div class="modal-content">
-									<form action="{{url_for('delete', id=current_user.get_id())}}" method="POST">
-										<div class="modal-header">
-											<h4 class="modal-title">Delete Employee</h4>
-											<button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">&times;</button>
-										</div>
-										<div class="modal-body">
-											<p>Are you sure you want to delete the account {{current_user.getusername()}}?</p>
-											<p class="text-warning"><small>This action cannot be undone.</small></p>
-										</div>
-										<div class="modal-footer">
-											<input type="button" class="btn btn-default" data-bs-dismiss="modal" value="Cancel">
-											<input type="submit" value="Delete" class="btn btn-danger">
-										</div>
-									</form>
-								</div>
-							</div>
-						</div>
-                            </li>
-                            </div>
-
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
+</div> {% endfor %} <form action="/update" method="POST" enctype="multipart/form-data">
+  <section>
+    <div class="container py-5">
+      <div class="row">
+        <div class="col-lg-4">
+          <div class="card mb-4">
+            <div class="card-body text-center">
+              <!--Name and Profile Picture--> {% if current_user.getprofile_picture() %} <img src="{{ current_user.getprofile_picture() }}" alt="" class="rounded-circle img-fluid" style="width: 200px; height: 200px"> {% else %} <img src="./static/Images/profileicon.jpg" alt="" class="rounded-circle img-fluid" style="width: 200px; height: 200px"> {% endif %} <h5 class="my-3">{{ current_user.getusername() }}</h5> {% if current_user.getrole() == 'customer' %} <p class="text-muted mb-1">Customer</p> {% endif %} {% if current_user.getrole() == 'admin' %} <p class="text-muted mb-1">Administrator</p> {% endif %}
             </div>
+          </div>
+          <div class="card mb-4 mb-lg-9">
+            <div class="card-body p-0"> {% if current_user.getrole() == 'admin' %} <div class="container">
+                <!--Profile Page navigation-->
+                <ul id="accordion" class="accordion">
+                  <li>
+                    <div class="link">
+                      <i class="fa-solid fa-user"></i>Account Management <i class="fa fa-chevron-down"></i>
+                    </div>
+                    <ul class="submenu">
+                      <li>
+                        <a href="/Management">Manage Accounts</a>
+                      </li>
+                      <li>
+                        <a href="/update">Profile</a>
+                      </li>
+                      <li>
+                        <a href="/editPassword">Change Password</a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li>
+                    <div class="link">
+                      <i class="fa-solid fa-box"></i>
+                      </i>Transaction Management <i class="fa fa-chevron-down"></i>
+                    </div>
+                    <ul class="submenu">
+                      <li>
+                        <a href="/createInventory">Add Inventory</a>
+                      </li>
+                      <li>
+                        <a href="/retrieveInventory">Inventory Stocks </a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li>
+                    <div class="link">
+                      <i class="fa-solid fa-box"></i>
+                      </i>Food Management <i class="fa fa-chevron-down"></i>
+                    </div>
+                    <ul class="submenu">
+                      <li>
+                        <a href="/createFood">Add Food</a>
+                      </li>
+                      <li>
+                        <a href="/retrieveFood">Food Database </a>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </div> {% endif %} {% if current_user.getrole() == 'customer' %} <div class="container">
+                <!--Profile Page navigation-->
+                <ul id="accordion" class="accordion">
+                  <li>
+                    <div class="link">
+                      <i class="fa-solid fa-user"></i>My Account <i class="fa fa-chevron-down"></i>
+                    </div>
+                    <ul class="submenu">
+                      <li>
+                        <a href="/update">Profile</a>
+                      </li>
+                      <li>
+                        <a href="/editPassword">Change Password</a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li>
+                    <div class="link">
+                      <i class="fa-solid fa-cart-shopping"></i>My Food Diary <i class="fa fa-chevron-down"></i>
+                    </div>
+                    <ul class="submenu">
+                      <li>
+                        <a href="/retrieve_Diary">Food Diary</a>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </div> {% endif %} </div>
+          </div>
         </div>
+        <div class="col-lg-8">
+          <div class="card mb-4">
+            <div class="card-body"> {% if current_user.getrole() == "customer" %} <div class="row">
+                <div class="col-sm-3">
+                  {{form.first_name.label(class = 'form-labels')}}
+                </div>
+                <div class="col-sm-9">
+                  {{form.first_name(class = 'form-control')}}
+                </div>
+              </div>
+              <hr>
+              <div class="row">
+                <div class="col-sm-3">
+                  {{form.last_name.label(class = 'form-labels')}}
+                </div>
+                <div class="col-sm-9">
+                  {{form.last_name(class = 'form-control')}}
+                </div>
+              </div>
+              <hr>
+              <div class="row">
+                <div class="col-sm-3">
+                  {{form.username.label(class = 'form-labels')}}
+                </div>
+                <div class="col-sm-9">
+                  {{form.username(class = 'form-control')}}
+                </div>
+              </div>
+              <hr>
+              <div class="row">
+                <div class="col-sm-3">
+                  {{form.email.label(class = 'form-label')}}
+                </div>
+                <div class="col-sm-9">
+                  {{form.email(class = 'form-control')}}
+                </div>
+              </div>
+              <hr>
+              <div class="row">
+                <div class="col-sm-3">
+                  {{form.phone_number.label(class = 'form-label')}}
+                </div>
+                <div class="col-sm-9">
+                  {{form.phone_number(class = 'form-control')}}
+                </div>
+              </div>
+              <hr>
+              <div class="row">
+                <div class="col-sm-3">
+                  {{form.address.label(class = 'form-label')}}
+                </div>
+                <div class="col-sm-9">
+                  {{form.address(class = 'form-control')}}
+                </div>
+              </div>
+              <hr>
+              <div class="row">
+                <div class="col-sm-3">
+                  {{form.weight.label(class = 'form-labels')}}
+                </div>
+                <div class="col-sm-9">
+                  {{form.weight(class = 'form-control')}}
+                </div>
+              </div>
+              <hr>
+              <div class="row">
+                <div class="col-sm-3">
+                  {{form.height.label(class = 'form-labels')}}
+                </div>
+                <div class="col-sm-9">
+                  {{form.height(class = 'form-control')}}
+                </div>
+              </div>
+              <hr>
+              <div class="row">
+                <div class="col-sm-3">
+                  {{form.gender.label(class = 'form-labels')}}
+                </div>
+                <div class="col-sm-9">
+                  {{form.gender(class = 'form-control')}}
+                </div>
+              </div>
+              <hr>
+              <div class="row">
+                <div class="col-sm-3">
+                  {{form.age.label(class = 'form-labels')}}
+                </div>
+                <div class="col-sm-9">
+                  {{form.age(class = 'form-control')}}
+                </div>
+              </div>
+              <hr>
+              <div class="row">
+                <div class="col-sm-3">
+                  {{form.activity_level.label(class = 'form-labels')}}
+                </div>
+                <div class="col-sm-9">
+                  {{form.activity_level(class = 'form-control')}}
+                </div>
+              </div>
+              <hr>
+              <div class="row">
+                <div class="col-sm-3">
+                  {{form.profile_picture.label(class = 'form-label')}}
+                </div>
+                <div class="col-sm-9">
+                  {{form.profile_picture(class = 'form-control')}}
+                </div>
+                <br>
+                <div class="mt-5 text-center">
+                  <li style="display:inline-block;">
+                    {{form.submit(class="btn btn-success")}}
+                  </li>
+                  <li style="display:inline-block;">
+                    <!--                                <a class="btn btn-danger" href="/delete">Delete Account</a>-->
+                    <a href="#deleteEmployeeModal" class="btn btn-danger" class="delete" data-toggle="modal">
+                      <i class="material-icons" data-bs-toggle="modal" data-bs-target="#myModal_{{current_user.get_id()}}" data-toggle="tooltip" title="Delete">&#xE872;</i>
+                    </a>
+                    <div id="myModal_{{current_user.get_id()}}" class="modal fade">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <form action="{{url_for('delete', id=current_user.get_id())}}" method="POST">
+                            <div class="modal-header">
+                              <h4 class="modal-title">Delete Employee</h4>
+                              <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                              <p>Are you sure you want to delete the account {{current_user.getusername()}}?</p>
+                              <p class="text-warning">
+                                <small>This action cannot be undone.</small>
+                              </p>
+                            </div>
+                            <div class="modal-footer">
+                              <input type="button" class="btn btn-default" data-bs-dismiss="modal" value="Cancel">
+                              <input type="submit" value="Delete" class="btn btn-danger">
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                </div> {% endif %} {% if current_user.getrole() == "admin" %} <div class="col-sm-3">
+                  {{form.first_name.label(class = 'form-labels')}}
+                </div>
+                <div class="col-sm-9">
+                  {{form.first_name(class = 'form-control')}}
+                </div>
+              </div>
+              <hr>
+              <div class="row">
+                <div class="col-sm-3">
+                  {{form.last_name.label(class = 'form-labels')}}
+                </div>
+                <div class="col-sm-9">
+                  {{form.last_name(class = 'form-control')}}
+                </div>
+              </div>
+              <hr>
+              <div class="row">
+                <div class="col-sm-3">
+                  {{form.username.label(class = 'form-labels')}}
+                </div>
+                <div class="col-sm-9">
+                  {{form.username(class = 'form-control')}}
+                </div>
+              </div>
+              <hr>
+              <div class="row">
+                <div class="col-sm-3">
+                  {{form.email.label(class = 'form-label')}}
+                </div>
+                <div class="col-sm-9">
+                  {{form.email(class = 'form-control')}}
+                </div>
+              </div>
+              <hr>
+              <div class="row">
+                <div class="col-sm-3">
+                  {{form.phone_number.label(class = 'form-label')}}
+                </div>
+                <div class="col-sm-9">
+                  {{form.phone_number(class = 'form-control')}}
+                </div>
+              </div>
+              <hr>
+              <div class="row">
+                <div class="col-sm-3">
+                  {{form.profile_picture.label(class = 'form-label')}}
+                </div>
+                <div class="col-sm-9">
+                  {{form.profile_picture(class = 'form-control')}}
+                </div>
+              </div>
+              <div class="mt-5 text-center">
+                <li style="display:inline-block;">
+                  {{form.submit(class="btn btn-success")}}
+                </li>
+                <li style="display:inline-block;">
+                  <!--                                <a class="btn btn-danger" href="/delete">Delete Account</a>-->
+                  <a href="#deleteEmployeeModal" class="btn btn-danger" class="delete" data-toggle="modal">
+                    <i class="material-icons" data-bs-toggle="modal" data-bs-target="#myModal_{{current_user.get_id()}}" data-toggle="tooltip" title="Delete">&#xE872;</i>
+                  </a>
+                  <div id="myModal_{{current_user.get_id()}}" class="modal fade">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <form action="{{url_for('delete', id=current_user.get_id())}}" method="POST">
+                          <div class="modal-header">
+                            <h4 class="modal-title">Delete Employee</h4>
+                            <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">&times;</button>
+                          </div>
+                          <div class="modal-body">
+                            <p>Are you sure you want to delete the account {{current_user.getusername()}}?</p>
+                            <p class="text-warning">
+                              <small>This action cannot be undone.</small>
+                            </p>
+                          </div>
+                          <div class="modal-footer">
+                            <input type="button" class="btn btn-default" data-bs-dismiss="modal" value="Cancel">
+                            <input type="submit" value="Delete" class="btn btn-danger">
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </div> {% endif %}
+            </div>
+          </div>
         </div>
-</section>
+      </div>
+    </div>
+    </div>
+  </section>
 </form>
-</div>
-{% endblock %}
+</div> {% endblock %}

@@ -120,46 +120,31 @@
   <body>
     <div class="signup-form">
       <form method="POST">
-        <h2>Create An Account</h2>
         <div class="form-group">
-          <div class="input-group">
-            <span class="input-group-addon">
-              <i class="fa fa-user"></i>
-            </span>
-            {{form.username(class = 'form-control', placeholder = 'Username')}}
-          </div>
+          {{ body_details_form.height.label(class='form-control-label') }}
+          {{ body_details_form.height(class='form-control', placeholder='Height (in cm)') }}
         </div>
         <div class="form-group">
-          <div class="input-group">
-            <span class="input-group-addon">
-              <i class="fa fa-paper-plane"></i>
-            </span>
-            {{form.email(class = 'form-control', placeholder = 'Email Address')}}
-          </div>
+          {{ body_details_form.weight.label(class='form-control-label') }}
+          {{ body_details_form.weight(class='form-control', placeholder='Weight (in kg)') }}
         </div>
         <div class="form-group">
-          <div class="input-group">
-            <span class="input-group-addon">
-              <i class="fa fa-lock"></i>
-            </span>
-            {{form.password1(class = 'form-control', placeholder = 'Password')}}
-          </div>
+          {{ body_details_form.age.label(class='form-control-label') }}
+          {{ body_details_form.age(class='form-control', placeholder='Age') }}
         </div>
         <div class="form-group">
-          <div class="input-group">
-            <span class="input-group-addon">
-              <i class="fa fa-lock"></i>
-              <i class="fa fa-check"></i>
-            </span>
-            {{form.password2(class = 'form-control', placeholder = 'Confirm Password')}}
-          </div>
+          {{ body_details_form.gender.label(class='form-control-label') }}
+          {{ body_details_form.gender(class='form-control') }}
         </div>
-        <div class="text-danger mt-2">{{error}}</div>
         <div class="form-group">
-          {{form.submit(class="btn btn-primary btn-block btn-lg")}}
+          {{ body_details_form.activity_level.label(class='form-control-label') }}
+          {{ body_details_form.activity_level(class='form-control') }}
+        </div>
+        <div class="form-group">
+          {{ body_details_form.submit(class="btn btn-primary btn-block btn-lg") }}
         </div>
       </form>
+      <div class="text-center">Already have an account? <a href="/Login">Login here</a>. </div>
     </div>
   </body>
 </html> {% endblock %}
-

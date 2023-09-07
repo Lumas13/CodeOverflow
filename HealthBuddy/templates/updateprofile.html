@@ -241,8 +241,8 @@ var accordion = new Accordion($('#accordion'), false);
                 <div class="col-lg-8">
                     <div class="card mb-4">
                         <div class="card-body">
+                            {% if current_user.getrole() == "customer" %}
                             <div class="row">
-                                {% if current_user.getrole() == "customer" %}
                                 <div class="col-sm-3">
                                     {{form.first_name.label(class = 'form-labels')}}
                                 </div>
@@ -293,6 +293,51 @@ var accordion = new Accordion($('#accordion'), false);
                                 </div>
                                 <div class="col-sm-9">
                                     {{form.address(class = 'form-control')}}
+                                </div>
+                            </div>
+                             <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    {{form.weight.label(class = 'form-labels')}}
+                                </div>
+                                <div class="col-sm-9">
+                                    {{form.weight(class = 'form-control')}}
+                                </div>
+                            </div>
+                             <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    {{form.height.label(class = 'form-labels')}}
+                                </div>
+                                <div class="col-sm-9">
+                                    {{form.height(class = 'form-control')}}
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    {{form.gender.label(class = 'form-labels')}}
+                                </div>
+                                <div class="col-sm-9">
+                                    {{form.gender(class = 'form-control')}}
+                                </div>
+                            </div>
+                             <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    {{form.age.label(class = 'form-labels')}}
+                                </div>
+                                <div class="col-sm-9">
+                                    {{form.age(class = 'form-control')}}
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    {{form.activity_level.label(class = 'form-labels')}}
+                                </div>
+                                <div class="col-sm-9">
+                                    {{form.activity_level(class = 'form-control')}}
                                 </div>
                             </div>
                             <hr>

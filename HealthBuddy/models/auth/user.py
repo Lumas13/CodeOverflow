@@ -18,6 +18,13 @@ class User(UserMixin):
         self.__profile_picture = ''
         self.__points = 0
 
+        self.__goal = ''
+        self.__weight = 0
+        self.__age = 0
+        self.__height = 0
+        self.__gender = ''
+        self.__rec_cal = 0
+        self.__activity_level = ''
     # Mutator Methods
     def getusername(self):
         return self.__username
@@ -103,3 +110,47 @@ class User(UserMixin):
 
     def setpoints(self, points):
         self.__points = points
+
+    def get_selected_goal(self):
+        return self.__selected_goal
+
+    def set_selected_goal(self, selected_goal):
+        self.__selected_goal = selected_goal
+
+    def get_weight(self):
+        return self.__weight
+
+    def set_weight(self, weight):
+        self.__weight = weight
+
+    def get_age(self):
+        return self.__age
+
+    def set_age(self, age):
+        self.__age = age
+
+    def get_height(self):
+        return self.__height
+
+    def set_height(self, height):
+        self.__height = height
+
+    def get_gender(self):
+        return self.__gender
+
+    def set_gender(self, gender):
+        self.__gender = gender
+
+    def get_rec_cal(self):
+        return self.__rec_cal
+
+    def set_rec_cal(self, rec_cal):
+        self.__rec_cal = rec_cal
+
+    def get_activity_level(self):
+        return self.__activity_level
+
+    def set_activity_level(self, activity_level):
+        self.__activity_level = activity_level
+
+

@@ -3,7 +3,8 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify, f
 import shelve
 
 # ACCOUNT MANAGEMENT IMPORT
-from models.auth.authforms import SignupForm, LoginForm, UpdateProfileForm, ChangePasswordForm, CreateCreditCardForm
+from models.auth.authforms import SignupForm, LoginForm, UpdateProfileForm, ChangePasswordForm, CreateCreditCardForm, BodyDetailsForm
+
 from models.auth.user import User
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 import time
@@ -21,6 +22,7 @@ import pandas as pd
 import json
 import plotly
 import plotly.graph_objects as go
+<<<<<<< Updated upstream
 
 # DIARY INNIT
 import Diary
@@ -28,6 +30,13 @@ import Food
 from Forms import CreateFoodForm
 from collections import defaultdict
 
+=======
+# CUSTOMER SUPPORT STUFF
+from flask import Flask, render_template, request, redirect, url_for, jsonify, flash, session
+from Forms import CreateFeedbackForm, CreateReportForm
+import shelve, FeedbackForm, ReportForm
+
+>>>>>>> Stashed changes
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'hyenen_kekrb'
 login_manager = LoginManager()
@@ -37,6 +46,7 @@ app.config['UPLOAD_FOLDER'] = '/static/Images/uploads/'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 app.config['SESSION_TYPE'] = 'filesystem'
 
+<<<<<<< Updated upstream
 
 
 ## START OF FOOD CRUD ##
@@ -122,6 +132,8 @@ def update_food(id):
         food.set_sugar(update_food_form.sugar.data)
 
 
+=======
+>>>>>>> Stashed changes
 
         db['Food'] = food_dict
         db.close()
@@ -409,6 +421,69 @@ def aboutUs():
     return render_template('aboutus.html')
 
 
+@app.route('/inputGoal')
+def inputGoal():
+    return render_template('inputGoal.html')
+
+
+@app.route('/logHome')
+def logHome():
+    # Get user information
+    weight = current_user.get_weight()  # in kg
+    height = current_user.get_height()  # in cm
+    age = current_user.get_age()  # in years
+    gender = current_user.get_gender()  # "Male" or "Female"
+    activity_level = current_user.get_activity_level()  # Activity level based on the choices you defined
+
+    # Calculate BMR based on gender
+    if gender == 'Male':
+        bmr = 10 * weight + 6.25 * height - 5 * age + 5
+    elif gender == 'Female':
+        bmr = 10 * weight + 6.25 * height - 5 * age - 161
+    else:
+        # Handle other gender options if needed
+        bmr = 0
+
+    # Define activity factors
+    activity_factors = {
+        'Sedentary': 1.2,
+        'Lightly Active': 1.375,
+        'Moderately Active': 1.55,
+        'Very Active': 1.725,
+        'Extra Active': 1.9
+    }
+
+    # Calculate daily calorie intake
+    if activity_level in activity_factors:
+        rec_cal = bmr * activity_factors[activity_level]
+    else:
+        # Handle other activity levels if needed
+        rec_cal = 0
+
+    # Update the user's rec_cal attribute
+    current_user.set_rec_cal(rec_cal)
+
+    return render_template('logHome.html', rec_cal=rec_cal)
+
+
+@app.route('/inputBody', methods=['GET', 'POST'])
+def inputBody():
+    body_details_form = BodyDetailsForm()  # Create an instance of BodyDetailsForm
+
+    if request.method == 'POST':
+        # Retrieve body details data from the form and store it in the session
+        session['weight'] = body_details_form.weight.data
+        session['age'] = body_details_form.age.data
+        session['height'] = body_details_form.height.data
+        session['gender'] = body_details_form.gender.data
+        session['activity_level'] = body_details_form.activity_level.data
+
+        # Redirect to the signup page
+        return redirect(url_for('signup'))
+
+    return render_template('inputBody.html', body_details_form=body_details_form)
+
+
 # Gets the user data from the signup form and enter it into the user_dict database
 @app.route("/Signup", methods=["GET", "POST"])
 def signup():
@@ -423,6 +498,16 @@ def signup():
         id = calendar.timegm(current_gmt)
         user_dict = {}
         error = 'none'
+
+        # Retrieve the body details data from the session
+
+        height = session.get('height')
+        weight = session.get('weight')
+        age = session.get('age')
+        gender = session.get('gender')
+        activity = session.get('activity_level')
+
+        print(height)
         try:
             db = shelve.open('db/customer/users')
             if 'customer' in db:
@@ -460,6 +545,11 @@ def signup():
             else:
                 user = User(username, email, password, id)
                 user.setrole('customer')
+                user.set_height(height)
+                user.set_weight(weight)
+                user.set_age(age)
+                user.set_gender(gender)
+                user.set_activity_level(activity)
                 user_dict[id] = user
                 db['customer'] = user_dict
                 db.close()
@@ -563,6 +653,11 @@ def update():
                 users.setcredit_number(update_form.credit_number.data)
                 users.setcredit_cvv(update_form.credit_cvv.data)
                 users.setcredit_date(update_form.credit_date.data)
+                users.set_weight(update_form.weight.data)
+                users.set_height(update_form.height.data)
+                users.set_age(update_form.age.data)
+                users.set_gender(update_form.gender.data)
+                users.set_activity_level(update_form.activity_level.data)
                 print(update_form.profile_picture.data)
                 # Upload user profile picture
                 if update_form.profile_picture.data:
@@ -589,6 +684,11 @@ def update():
         update_form.credit_cvv.data = current_user.getcredit_cvv()
         update_form.credit_date.data = current_user.getcredit_date()
         update_form.profile_picture.data = current_user.getprofile_picture()
+        update_form.weight.data = current_user.get_weight()
+        update_form.height.data = current_user.get_height()
+        update_form.age.data = current_user.get_age()
+        update_form.gender.data = current_user.get_gender()
+        update_form.activity_level.data = current_user.get_activity_level()
     return render_template('updateprofile.html', form=update_form, card_list=card_list)
 
 
@@ -1018,6 +1118,55 @@ def confirm_page():
                            total_price=round(total, 2), card_list=card_list,
                            point_discount=round(float(point_discount), 2),
                            total_price_without_discount=total_price_without_discount, points_left=round(points_left, 2))
+<<<<<<< Updated upstream
+=======
+
+
+@app.route("/addCard", methods=["GET", "POST"])
+def addCard():
+    creditCard_form = CreateCreditCardForm()
+    if request.method == "POST":
+        # Retrieve the user data from the signup form
+        card_name = creditCard_form.card_name.data
+        credit_number = creditCard_form.credit_number.data
+        credit_cvv = creditCard_form.credit_cvv.data
+        expiry_date = creditCard_form.expiry_date.data
+
+        error = None
+        card_dict = {}
+        try:
+            db = shelve.open('db/Card/card', 'c')
+            if 'Card' in db:
+                card_dict = db['Card']
+            else:
+                db['Card'] = card_dict
+
+            card = Card.Card(card_name, credit_number, credit_cvv, expiry_date, current_user.get_id())
+            card_dict[card.get_card_id()] = card
+            db['Card'] = card_dict
+            db.close()
+            return redirect(url_for('update'))
+        except IOError:
+            print("IO Error")
+        except Exception as ex:
+            print(f"Unknown error occurred as {ex}")
+
+    return render_template('CreditCardForm.html', form=creditCard_form)
+
+
+@app.route('/deleteCard/<int:id>', methods=['POST'])
+def delete_card(id):
+    card_dict = {}
+    db = shelve.open('db/Card/card', 'w')
+    card_dict = db['Card']
+
+    card_dict.pop(id)
+
+    db['Card'] = card_dict
+    db.close()
+
+    return redirect(url_for('update'))
+>>>>>>> Stashed changes
 
 
 #ADDING SALES CR
@@ -1352,6 +1501,184 @@ def sales_generation():
     graph1JSON = json.dumps(data, cls=plotly.utils.PlotlyJSONEncoder)
 
     return render_template('SalesGeneration.html', graph1JSON=graph1JSON)
+
+
+<<<<<<< Updated upstream
+=======
+# CUSTOMER SUPPORT INNNIT
+@app.route('/createFeedbackForm', methods=['GET', 'POST'])
+@login_required
+def create_feedback():
+    create_feedback_form = CreateFeedbackForm(request.form)
+    if request.method == 'POST' and create_feedback_form.validate():
+        feedback_dict = {}
+        db = shelve.open('db/Feedback/feedback.db', 'c')
+
+        try:
+            feedback_dict = db['Feedback']
+        except:
+            print("Error in retrieving Feedback from feedback.db.")
+
+        feedback = FeedbackForm.Feedback(create_feedback_form.name.data, create_feedback_form.email.data,
+                                         create_feedback_form.question1.data, create_feedback_form.question2.data,
+                                         create_feedback_form.question3.data, create_feedback_form.remarks.data)
+        for key in feedback_dict:
+            if key == feedback.get_feedback_id():
+                feedback.set_feedback_id(int(feedback.get_feedback_id()) + 1)
+        feedback_dict[feedback.get_feedback_id()] = feedback
+        db['Feedback'] = feedback_dict
+        db.close()
+
+        answer = create_feedback_form.question1.data
+        if answer != 0:
+            flash("Thank you for your feedback!", "success")
+
+        db = shelve.open('db/customer/users')
+        user_dict = {}
+        user_dict = db['customer']
+        for users in user_dict.values():
+            if users.get_id() == current_user.get_id():
+                users.setusername(create_feedback_form.name.data)
+                users.setemail(create_feedback_form.email.data)
+                db['customer'] = user_dict
+                db.close()
+        return redirect(url_for('home'))
+    else:
+        create_feedback_form.name.data = current_user.getusername()
+        create_feedback_form.email.data = current_user.getemail()
+
+    return render_template('createFeedbackForm.html', form=create_feedback_form)
+
+
+@app.route('/retrieveFeedbackForm')
+def retrieve_feedback():
+    feedback_dict = {}
+    db = shelve.open('db/Feedback/feedback.db', 'r')
+    feedback_dict = db['Feedback']
+    db.close()
+
+    feedback_list = []
+    for key in feedback_dict:
+        feedback = feedback_dict.get(key)
+        feedback_list.append(feedback)
+
+    return render_template('retrieveFeedbackForm.html', count=len(feedback_list), feedback_list=feedback_list)
+
+
+@app.route('/deleteFeedback/<int:id>', methods=['POST'])
+def delete_feedback(id):
+    feedback_dict = {}
+    db = shelve.open('db/Feedback/feedback.db', 'w')
+    feedback_dict = db['Feedback']
+
+    feedback_dict.pop(id)
+
+    db['Feedback'] = feedback_dict
+    db.close()
+
+    return redirect(url_for('retrieve_feedback'))
+
+
+@app.route('/createReportForm', methods=['GET', 'POST'])
+@login_required
+def create_report():
+    create_report_form = CreateReportForm(request.form)
+    if request.method == 'POST' and create_report_form.validate():
+        req = request.files.to_dict()['report_image']
+        req.save('./' + app.config['UPLOAD_FOLDER'] + req.filename)
+
+        report_dict = {}
+        db = shelve.open('db/Report/report.db', 'c')
+
+        try:
+            report_dict = db['Report']
+        except:
+            print("Error in retrieving Report from report.db.")
+
+        report = ReportForm.Report(create_report_form.name.data, create_report_form.email.data,
+                                   create_report_form.contact.data, create_report_form.problem.data,
+                                   create_report_form.other.data, create_report_form.date.data, req.filename,
+                                   create_report_form.remarks.data)
+        for key in report_dict:
+            if key == report.get_report_id():
+                report.set_report_id(int(report.get_report_id()) + 1)
+        report_dict[report.get_report_id()] = report
+        db['Report'] = report_dict
+        db.close()
+
+        answer = create_report_form.name.data
+        if answer != 0:
+            flash("Thank you for submitting your report. We will get back to you as soon as possible.")
+
+        db = shelve.open('db/customer/users')
+        user_dict = {}
+        user_dict = db['customer']
+        for users in user_dict.values():
+            if users.get_id() == current_user.get_id():
+                users.setusername(create_report_form.name.data)
+                users.setemail(create_report_form.email.data)
+                users.setphone_number(create_report_form.contact.data)
+                db['customer'] = user_dict
+                db.close()
+        return redirect(url_for('home'))
+    else:
+        create_report_form.name.data = current_user.getusername()
+        create_report_form.email.data = current_user.getemail()
+        create_report_form.contact.data = current_user.getphone_number()
+
+    return render_template('createReportForm.html', form=create_report_form)
+
+
+@app.route('/retrieveReportForm')
+def retrieve_report():
+    report_dict = {}
+    db = shelve.open('db/Report/report.db', 'r')
+    report_dict = db['Report']
+    db.close()
+
+    report_list = []
+    for key in report_dict:
+        report = report_dict.get(key)
+        report_list.append(report)
+
+    return render_template('retrieveReportForm.html', count=len(report_list), report_list=report_list)
+
+
+@app.route('/deleteReport/<int:id>', methods=['POST'])
+def delete_report(id):
+    report_dict = {}
+    db = shelve.open('db/Report/report.db', 'w')
+    report_dict = db['Report']
+
+    report_dict.pop(id)
+
+    db['Report'] = report_dict
+    db.close()
+
+    return redirect(url_for('retrieve_report'))
+
+
+@app.route("/updateStatus/<int:id>", methods=['POST'])
+def update_status(id):
+    report_dict = {}
+    db = shelve.open('db/Report/report.db', 'w')
+
+    try:
+        if 'Report' in db:
+            report_dict = db['Report']
+        else:
+            db['Report'] = report_dict
+    except:
+        print("Error in opening storage.db")
+
+    report = report_dict.get(id)
+    report.set_status('completed')
+    db['Report'] = report_dict
+
+    db.close()
+
+    return redirect(url_for('retrieve_report'))
+
 
 
 if __name__ == '__main__':

@@ -38,12 +38,12 @@
         {% set max_points.value=total_price_without_discount %}
         {% endif %}
 
-        <form action="/confirmPage" method="POST">
-            <label for ="">Points Redeemables: </label>
-                    <input type="range" name="points" value="{{point_discount}}" min="0.0" max="{{max_points.value}}" onchange="this.form.submit()">
-            <p style="font-size:10px; display:inline;" > [{{point_discount}}] (You have {{points_left}} points left)</p>
+<!--        <form action="/confirmPage" method="POST">-->
+<!--            <label for ="">Points Redeemables: </label>-->
+<!--                    <input type="range" name="points" value="{{point_discount}}" min="0.0" max="{{max_points.value}}" onchange="this.form.submit()">-->
+<!--            <p style="font-size:10px; display:inline;" > [{{point_discount}}] (You have {{points_left}} points left)</p>-->
 
-        </form>
+<!--        </form>-->
         <br>
         <br>
 
@@ -60,8 +60,9 @@
                                     <a href="/addCard" style="color:blue;float:right;">Add Card?</a>
 
             <br>
+            {% if counter.value < 0 %}
             <p>Points Redeemables Used : <input style="all: unset;" type="number" name="pointsSales"  value="{{point_discount}}" min="{{point_discount}}" max="{{point_discount}}"></p>
-
+            {% endif %}
             <p>Total Price : $ {{total_price}}</p>
             <br>
 

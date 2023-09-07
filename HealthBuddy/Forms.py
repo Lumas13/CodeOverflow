@@ -25,7 +25,7 @@ class CreateInventoryForm(Form):
     product_desc = StringField('Product Description', [validators.Length(min=1, max=150), validators.DataRequired()])
     category = SelectField('Category',[validators.DataRequired()], default=(0, "fruits"), choices=[(0, "fruits"), (1, "vegetables"), (2, "drinks")])
     price = StringField('Price', [validators.DataRequired()], default='1')
-    discount = StringField('Discount', default='0')
+    discount = StringField('Discount', default=0)
     quantity = StringField('Quantity', [validators.DataRequired()], default='1')
     product_image = FileField('Image of product:', validators=[FileAllowed(['jpg', 'png', 'jpeg'], 'Images only!')])
 

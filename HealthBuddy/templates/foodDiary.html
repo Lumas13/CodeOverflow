@@ -37,7 +37,7 @@
     }
 
     .progress-bar {
-        width: {{ (total_calories / rec_cal * 100) }}%;
+        width: {{ (total_calories / current_user.get_rec_cal() * 100) }}%;
         height: 100%;
         background-color: #007bff; /* Adjust this color as needed */
         border-radius: 4px;
@@ -55,7 +55,7 @@
         </div>
 
         <div class="info-box">
-            <p>Base Goal : {{rec_cal}}  </p>
+            <p>Base Goal : {{rec_cal}} </p>
             <p>Remaining Calories : {{rec_cal - total_calories}}</p>
             <div class="addentrybtn-box">
             <a class="btn btn-success" href="/retrieveFood" role="button">Add Food Entry</a>
@@ -153,6 +153,8 @@
             </tbody>
         </table>
         {% if counter.value>0 %}
+
+        <p>Total Calories : {{total_calories}}  </p>
 
         {% else %}
         <p>Empty Diary</p>

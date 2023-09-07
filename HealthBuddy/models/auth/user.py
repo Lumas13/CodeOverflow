@@ -23,7 +23,7 @@ class User(UserMixin):
         self.__age = 0
         self.__height = 0
         self.__gender = ''
-        self.__rec_cal = 0
+        self.__rec_cal = 1
         self.__activity_level = ''
         self.__goal = ''
 

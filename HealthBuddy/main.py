@@ -298,6 +298,7 @@ def retrieve_Diary():
     age = current_user.get_age()
     gender = current_user.get_gender()
     activity_level = current_user.get_activity_level()
+    goal = current_user.get_goal()
     print(weight)
     # Calculate BMR based on gender
     if gender == "Male":
@@ -318,7 +319,12 @@ def retrieve_Diary():
     if activity_level in activity_factors:
         rec_cal = bmr * activity_factors[activity_level]
     else:
-        rec_cal = 0
+        rec_cal = 1
+
+    if goal == "Lose Weight":
+        rec_cal -= 300
+    elif goal == "Gain Weight":
+        rec_cal += 300
 
     # Update the user's rec_cal attribute
     current_user.set_rec_cal(rec_cal)
@@ -398,6 +404,7 @@ def filter_diary():
     age = current_user.get_age()
     gender = current_user.get_gender()
     activity_level = current_user.get_activity_level()
+    goal = current_user.get_goal()
     print(weight)
     # Calculate BMR based on gender
     if gender == "Male":
@@ -418,7 +425,12 @@ def filter_diary():
     if activity_level in activity_factors:
         rec_cal = bmr * activity_factors[activity_level]
     else:
-        rec_cal = 0
+        rec_cal = 1
+
+    if goal == "Lose Weight":
+        rec_cal -= 300
+    elif goal == "Gain Weight":
+        rec_cal += 300
 
     # Update the user's rec_cal attribute
     current_user.set_rec_cal(rec_cal)
@@ -470,14 +482,39 @@ def aboutUs():
 
 @app.route("/logHome")
 def logHome():
-    # Get user information
+    diary_dict = {}
+
+    db = shelve.open('db/Diary/diary.db', 'c')
+    try:
+        if 'Diary' in db:
+            diary_dict = db['Diary']
+        else:
+            db['Diary'] = diary_dict
+    except:
+        print("Error in opening storage.db")
+    db.close()
+    current_date = date.today()
+    diary_list = []
+    for key in diary_dict:  # {1:object(lucas,1,3),2:object(qwdqdw,3,4)}
+
+        diary = diary_dict.get(key)
+        print(f"diary{diary} {diary.get_date()} {current_date}")
+        if str(diary.get_date()) == str(current_date):
+            diary_list.append(diary)
+
+    total = 0
+    for object in diary_list:
+        if object.get_user_id() == current_user.get_id():
+            subtotal = object.set_subtotal(object.get_calories(), object.get_quantity())
+            total = total + float(subtotal)
+
     weight = current_user.get_weight()
     height = current_user.get_height()
     age = current_user.get_age()
     gender = current_user.get_gender()
     activity_level = current_user.get_activity_level()
-    goal = current_user.get_goal()  # Assuming you have a method to get the user's goal
-
+    goal = current_user.get_goal()
+    print(weight)
     # Calculate BMR based on gender
     if gender == "Male":
         bmr = 10 * weight + 6.25 * height - 5 * age + 5
@@ -493,23 +530,22 @@ def logHome():
         "Very Active": 1.725,
     }
 
+
     # Calculate daily calorie intake
     if activity_level in activity_factors:
-        rec_cal = bmr * activity_factors[activity_level]
-    else:
-        rec_cal = 0
 
-    # Adjust rec_cal based on the user's goal
+        rec_cal = bmr * activity_factors[activity_level]
+
+    else:
+        rec_cal = 1
     if goal == "Lose Weight":
         rec_cal -= 300
     elif goal == "Gain Weight":
         rec_cal += 300
-
     # Update the user's rec_cal attribute
     current_user.set_rec_cal(rec_cal)
 
-    return render_template("logHome.html", rec_cal=rec_cal)
-
+    return render_template('foodDiary.html', count=len(diary_list), diary_list=diary_list, total_calories=total,current_date=current_date,rec_cal=rec_cal)
 
 @app.route("/inputBody", methods=["GET", "POST"])
 def inputBody():
@@ -643,7 +679,7 @@ def login():
                         flash(f"{user.getusername()} has logged in successfully")
 
                     print(user.getusername(), " has logged in")
-                    return redirect(url_for("logHome"))
+                    return redirect(url_for("update"))
 
     return render_template("Login.html", form=login_form)
 
@@ -1233,6 +1269,7 @@ def addSales():
                 db4['Inventory'] = inventory_dict
                 db4.close()
 
+    point_discount = 0
     points_discounted_per_item = float(point_discount) / total_quantity
     current_user_id = current_user.get_id()
     for i in sales_id_list:
